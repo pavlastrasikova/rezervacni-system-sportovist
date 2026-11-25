@@ -1,0 +1,3202 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SportFlow v2 | Rezervační systém sportovišť & provoz areálu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-dark: #0a0f1d;
+      --bg-surface: #111827;
+      --bg-card: #1e293b;
+      --bg-card-hover: #27354f;
+      --primary: #3b82f6;
+      --primary-glow: rgba(59, 130, 246, 0.35);
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-purple: #8b5cf6;
+      --accent-rose: #f43f5e;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --shadow-soft: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, .brand-font {
+      font-family: 'Space Grotesk', sans-serif;
+      letter-spacing: -0.02em;
+    }
+
+    /* Top Navigation */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(16px);
+      background: rgba(10, 15, 29, 0.88);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text-main);
+      text-decoration: none;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #3b82f6, #10b981);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.1rem;
+      box-shadow: 0 0 15px var(--primary-glow);
+    }
+
+    .v2-badge {
+      background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Role switcher bar in Header */
+    .role-switcher {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 4px;
+      border-radius: 30px;
+      display: flex;
+      gap: 4px;
+      border: 1px solid var(--border-color);
+    }
+
+    .role-btn {
+      padding: 0.45rem 1rem;
+      border-radius: 20px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: var(--transition);
+    }
+
+    .role-btn:hover {
+      color: var(--text-main);
+    }
+
+    .role-btn.active[data-role="user"] {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 0 15px var(--primary-glow);
+    }
+
+    .role-btn.active[data-role="trainer"] {
+      background: var(--accent-purple);
+      color: #fff;
+      box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+    }
+
+    .role-btn.active[data-role="admin"] {
+      background: var(--accent-emerald);
+      color: #fff;
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+    }
+
+    /* Hero Banner */
+    .hero {
+      padding: 3.5rem 1.5rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 1rem;
+      background: rgba(139, 92, 246, 0.12);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 30px;
+      font-size: 0.85rem;
+      color: #c084fc;
+      margin-bottom: 1.25rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 4.5vw, 3.4rem);
+      line-height: 1.15;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      max-width: 860px;
+      margin: 0 auto 1.75rem;
+    }
+
+    /* Device Preview Selector */
+    .preview-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .control-label {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-right: 0.5rem;
+    }
+
+    .device-btn {
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      background: var(--bg-surface);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: var(--transition);
+    }
+
+    .device-btn:hover {
+      border-color: rgba(255,255,255,0.2);
+      color: var(--text-main);
+    }
+
+    .device-btn.active {
+      background: var(--bg-card);
+      border-color: var(--primary);
+      color: #60a5fa;
+    }
+
+    /* Main Simulator Container */
+    .simulator-wrapper {
+      max-width: 1400px;
+      margin: 0 auto 5rem;
+      padding: 0 1rem;
+      transition: var(--transition);
+    }
+
+    .mockup-frame {
+      background: #000;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 28px;
+      padding: 12px;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 35px -10px var(--primary-glow);
+      transition: max-width 0.4s ease, border-radius 0.4s ease;
+      margin: 0 auto;
+    }
+
+    .mockup-frame.device-desktop { max-width: 100%; border-radius: 20px; }
+    .mockup-frame.device-tablet { max-width: 840px; border-radius: 28px; }
+    .mockup-frame.device-mobile { max-width: 430px; border-radius: 40px; padding: 10px; }
+
+    .screen-header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px;
+      background: #111827;
+      border-radius: 12px 12px 0 0;
+      border-bottom: 1px solid var(--border-color);
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .dots { display: flex; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ef4444; }
+    .dot-yellow { background: #f59e0b; }
+    .dot-green { background: #10b981; }
+
+    .current-mode-indicator {
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 2px 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.06);
+    }
+
+    .app-screen {
+      background: var(--bg-surface);
+      border-radius: 0 0 16px 16px;
+      min-height: 720px;
+      padding: 1.5rem;
+      overflow-y: auto;
+    }
+
+    /* App Internal Navigation / Tabs */
+    .app-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .app-nav-tabs {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      max-width: 100%;
+      padding-bottom: 4px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+      transition: var(--transition);
+    }
+
+    .tab-btn:hover { background: rgba(255,255,255,0.03); color: var(--text-main); }
+    .tab-btn.active {
+      background: var(--bg-card);
+      border-color: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+
+    .app-user-profile {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    /* Views */
+    .view-content {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .view-content.active-view { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Role Alert Banner inside app */
+    .role-banner {
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius-md);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .role-banner.banner-user {
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.15), rgba(30, 58, 138, 0.1));
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+    .role-banner.banner-trainer {
+      background: linear-gradient(90deg, rgba(139, 92, 246, 0.15), rgba(88, 28, 135, 0.1));
+      border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+    .role-banner.banner-admin {
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.15), rgba(6, 78, 59, 0.1));
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    /* Cards Grid */
+    .grid-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      transition: var(--transition);
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      background: var(--bg-card-hover);
+      border-color: rgba(255, 255, 255, 0.15);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .card-img-wrap {
+      height: 160px;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+      background: #0f172a;
+    }
+
+    .card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .card:hover .card-img { transform: scale(1.05); }
+
+    .card-tag {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      backdrop-filter: blur(8px);
+    }
+
+    .tag-open { background: rgba(16, 185, 129, 0.9); color: white; }
+    .tag-reserved { background: rgba(245, 158, 11, 0.9); color: white; }
+    .tag-closed { background: rgba(239, 68, 68, 0.9); color: white; }
+    .tag-pending { background: rgba(245, 158, 11, 0.9); color: white; }
+
+    .card-body {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .card-title { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .card-desc { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem; flex-grow: 1; }
+
+    .sport-pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .sport-pill {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+      color: #93c5fd;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border-color);
+      padding-top: 0.85rem;
+      margin-top: auto;
+    }
+
+    .price-tag { font-size: 1.1rem; font-weight: 700; color: #38bdf8; }
+    .price-sub { font-size: 0.75rem; color: var(--text-dim); }
+
+    .btn {
+      padding: 0.55rem 1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+    .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.78rem; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: #2563eb; box-shadow: 0 0 15px var(--primary-glow); }
+    .btn-purple { background: var(--accent-purple); color: #fff; }
+    .btn-purple:hover { background: #7c3aed; }
+    .btn-emerald { background: var(--accent-emerald); color: #fff; }
+    .btn-emerald:hover { background: #059669; }
+    .btn-rose { background: var(--accent-rose); color: #fff; }
+    .btn-rose:hover { background: #e11d48; }
+    .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
+    .btn-outline:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); }
+
+    /* Modal Styling */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 1rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+    .modal-box {
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 680px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.85);
+      transform: translateY(20px);
+      transition: transform 0.25s ease;
+    }
+    .modal-overlay.open .modal-box { transform: translateY(0); }
+
+    .modal-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-close-btn { background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; }
+    .modal-body { padding: 1.5rem; }
+
+    .form-group { margin-bottom: 1.25rem; }
+    .form-label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text-muted); }
+    .form-control {
+      width: 100%;
+      padding: 0.65rem 0.85rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+    .form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
+
+    /* Difficulty Badges */
+    .badge-diff {
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .diff-easy { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+    .diff-medium { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+    .diff-hard { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
+
+    /* Locker Rooms */
+    .locker-map {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1rem;
+    }
+    .locker-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      position: relative;
+    }
+    .locker-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; }
+    .locker-progress {
+      height: 8px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 0.75rem 0 0.4rem;
+    }
+    .locker-bar { height: 100%; border-radius: 4px; transition: width 0.4s ease; }
+
+    /* Interactive Sports Catalog Cards */
+    .sports-interactive-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .sport-interactive-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sport-interactive-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-4px);
+      background: var(--bg-card-hover);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    }
+
+    .sport-card-top {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .sport-card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+    }
+
+    /* Training Items */
+    .training-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      transition: var(--transition);
+    }
+    .training-item:hover { border-color: rgba(255,255,255,0.18); background: var(--bg-card-hover); }
+
+    .training-info {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      flex: 1;
+      min-width: 280px;
+    }
+    .training-icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(139, 92, 246, 0.15);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #c084fc;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    /* Employee Task Board */
+    .tasks-board {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1rem;
+    }
+    .staff-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+    }
+    .staff-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .staff-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #fff;
+    }
+    .task-entry {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+    }
+    .task-status-pill {
+      font-size: 0.7rem;
+      padding: 2px 7px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+    .status-pending { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+    .status-done { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+
+    /* Calendar Grid for past trainings */
+    .history-calendar {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1rem;
+    }
+    .history-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .history-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-3px);
+      background: var(--bg-card-hover);
+    }
+
+    /* Explanatory Feature Cards */
+    .specs-section { max-width: 1200px; margin: 4rem auto; padding: 0 1.5rem; }
+    .section-title { font-size: 1.8rem; text-align: center; margin-bottom: 0.75rem; }
+    .section-sub { text-align: center; color: var(--text-muted); max-width: 700px; margin: 0 auto 3rem; }
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
+    .feature-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      padding: 1.75rem;
+      border-radius: var(--radius-lg);
+      transition: var(--transition);
+    }
+    .feature-box:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-3px); }
+    .feature-icon-wrapper {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.2rem;
+      font-size: 1.2rem;
+    }
+    .fi-blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+    .fi-purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
+    .fi-green { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+    .fi-amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+    .fi-rose { background: rgba(244, 63, 94, 0.15); color: #fb7185; }
+
+    .payment-badge {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1e293b;
+      border: 1px solid var(--accent-emerald);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      z-index: 2000;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    footer {
+      border-top: 1px solid var(--border-color);
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      .navbar { flex-direction: column; gap: 0.75rem; }
+      .role-switcher { width: 100%; justify-content: center; }
+      .training-item { flex-direction: column; align-items: flex-start; }
+      .training-item .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Main Navigation -->
+  <header class="navbar">
+    <a href="#" class="brand">
+      <div class="brand-icon"><i class="fa-solid fa-bolt"></i></div>
+      <span>SportFlow <span class="v2-badge">v2.0 Pro</span></span>
+    </a>
+
+    <!-- Top Role Switcher -->
+    <div class="role-switcher">
+      <button class="role-btn active" data-role="user" onclick="switchRole('user')">
+        <i class="fa-solid fa-user"></i> Uživatel
+      </button>
+      <button class="role-btn" data-role="trainer" onclick="switchRole('trainer')">
+        <i class="fa-solid fa-dumbbell"></i> Trenér
+      </button>
+      <button class="role-btn" data-role="admin" onclick="switchRole('admin')">
+        <i class="fa-solid fa-shield-halved"></i> Správce (Admin)
+      </button>
+    </div>
+  </header>
+
+  <!-- Hero Presentation Section -->
+  <section class="hero">
+    <div class="hero-badge">
+      <i class="fa-solid fa-wand-magic-sparkles"></i> Verze 2.0 • Schvalování, úkoly personálu, rozklik sportů & historie
+    </div>
+    <h1>Komplexní operační systém sportovního areálu</h1>
+    <p>
+      Systém pro správu sportovišť, šaten a tréninků. 
+      V nové verzi 2.0 můžete <strong>rozkliknout jakýkoliv sport v katalogu</strong> a ihned zjistit nejbližší tréninky, trenéry, formu (individuální/kolektivní) a vhodná hřiště. Správce má navíc <strong>úkoly pro zaměstnance</strong> (úklid v čase), <strong>schvalování prostor</strong> a <strong>archiv proběhlých lekcí</strong>.
+    </p>
+
+    <!-- Device switcher preview -->
+    <div class="preview-controls">
+      <span class="control-label"><i class="fa-solid fa-display"></i> Režim zobrazení:</span>
+      <button class="device-btn active" onclick="setDevice('desktop', this)">
+        <i class="fa-solid fa-desktop"></i> PC / Notebook
+      </button>
+      <button class="device-btn" onclick="setDevice('tablet', this)">
+        <i class="fa-solid fa-tablet-screen-button"></i> Tablet
+      </button>
+      <button class="device-btn" onclick="setDevice('mobile', this)">
+        <i class="fa-solid fa-mobile-screen"></i> Mobilní telefon
+      </button>
+    </div>
+  </section>
+
+  <!-- Interactive Simulator Mockup -->
+  <section class="simulator-wrapper">
+    <div class="mockup-frame device-desktop" id="mockupFrame">
+      
+      <!-- Window Title Bar -->
+      <div class="screen-header-bar">
+        <div class="dots">
+          <div class="dot dot-red"></div>
+          <div class="dot dot-yellow"></div>
+          <div class="dot dot-green"></div>
+        </div>
+        <div class="current-mode-indicator" id="roleIndicator">
+          Aktivní pohled: <strong style="color: #60a5fa;">Běžný uživatel</strong>
+        </div>
+        <div style="font-size: 0.8rem; color: var(--text-dim);">
+          <i class="fa-solid fa-lock"></i> SportFlow Enterprise v2.0
+        </div>
+      </div>
+
+      <!-- App Inside Screen -->
+      <div class="app-screen">
+
+        <!-- In-App Header & Navigation -->
+        <div class="app-nav">
+          <div class="app-nav-tabs">
+            <button class="tab-btn active" onclick="showAppTab('hriste', this)">
+              <i class="fa-solid fa-futbol"></i> Hřiště & Sporty
+            </button>
+            <button class="tab-btn" onclick="showAppTab('treninky', this)">
+              <i class="fa-solid fa-users"></i> Tréninky & Lekce
+            </button>
+            <button class="tab-btn" onclick="showAppTab('satny', this)">
+              <i class="fa-solid fa-door-closed"></i> Šatny & Zázemí
+            </button>
+            <button class="tab-btn" id="userHistoryTab" onclick="showAppTab('moje-rezervace', this)">
+              <i class="fa-solid fa-clock-rotate-left"></i> Moje zápisy & Historie
+            </button>
+            <button class="tab-btn" onclick="showAppTab('sporty-all', this)">
+              <i class="fa-solid fa-list-check"></i> Katalog sportů (s rozklikem)
+            </button>
+            <!-- Admin exclusive tabs -->
+            <button class="tab-btn" id="adminSpecialTab" style="display:none;" onclick="showAppTab('sprava', this)">
+              <i class="fa-solid fa-chart-line"></i> Dashboard správce
+            </button>
+            <button class="tab-btn" id="adminStaffTab" style="display:none;" onclick="showAppTab('zamestnanci', this)">
+              <i class="fa-solid fa-clipboard-user"></i> Personál & Úkoly
+            </button>
+            <button class="tab-btn" id="adminHistoryTab" style="display:none;" onclick="showAppTab('kalendar-historie', this)">
+              <i class="fa-solid fa-calendar-check"></i> Proběhlé tréninky & Zápisy
+            </button>
+          </div>
+
+          <div class="app-user-profile">
+            <div class="user-avatar" id="avatarLetter">U</div>
+            <div style="line-height: 1.2;">
+              <div style="font-size: 0.85rem; font-weight: 700;" id="profileName">Jan Novák</div>
+              <div style="font-size: 0.72rem; color: var(--text-muted);" id="profileRole">Návštěvník</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Role Context Banner -->
+        <div class="role-banner banner-user" id="roleBanner">
+          <div>
+            <h4 style="font-size: 0.95rem; margin-bottom: 2px;" id="bannerTitle">Pohled: Běžný uživatel</h4>
+            <p style="font-size: 0.8rem; color: var(--text-muted);" id="bannerText">
+              Můžete procházet sportoviště, registrovat se na tréninky, platit online a v záložce <strong>"Moje zápisy & Historie"</strong> vidíte své aktuální i minulé účasti.
+            </p>
+          </div>
+          <div id="bannerActionSlot">
+            <button class="btn btn-outline" style="font-size: 0.75rem;" onclick="openPaymentModal('Rychlá rezervace')">
+              <i class="fa-solid fa-credit-card"></i> Způsoby online platby
+            </button>
+          </div>
+        </div>
+
+        <!-- ================= TAB 1: HŘIŠTĚ & SPORTOVIŠTĚ ================= -->
+        <div class="view-content active-view" id="tab-hriste">
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+              <h2 style="font-size: 1.4rem;">Dostupná sportoviště</h2>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">
+                Klikněte na jakékoliv hřiště pro zobrazení sportů, fotky a přiřazených šaten.
+                <span id="adminCourtHint" style="display:none; color: #34d399; font-weight: 600;">(Jako správce můžete prostory schvalovat či blokovat)</span>
+              </p>
+            </div>
+            <div id="courtFilterActions"></div>
+          </div>
+
+          <!-- Courts Grid -->
+          <div class="grid-cards" id="courtsContainer">
+            
+            <div class="card" onclick="openCourtModal('Hala A - Multifunkční palubovka')">
+              <div class="card-img-wrap">
+                <img src="https://images.unsplash.com/photo-1546519638-68e109498ffc?w=700&auto=format&fit=crop&q=80" alt="Multifunkční hala" class="card-img">
+                <span class="card-tag tag-open">Schváleno / Volno</span>
+              </div>
+              <div class="card-body">
+                <h3 class="card-title">Hala A - Multifunkční palubovka</h3>
+                <p class="card-desc">Vytápěná vnitřní hala s odpruženou podlahou a tribunou pro 150 diváků.</p>
+                <div class="sport-pill-row">
+                  <span class="sport-pill"><i class="fa-solid fa-volleyball"></i> Volejbal</span>
+                  <span class="sport-pill"><i class="fa-solid fa-basketball"></i> Basketbal</span>
+                  <span class="sport-pill"><i class="fa-solid fa-futbol"></i> Futsal</span>
+                  <span class="sport-pill"><i class="fa-solid fa-circle-dot"></i> Florbal</span>
+                </div>
+                <div class="card-footer">
+                  <div><span class="price-tag">650 Kč</span> <span class="price-sub">/ hod</span></div>
+                  <button class="btn btn-primary btn-sm"><i class="fa-regular fa-calendar-check"></i> Detail & Sporty</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" onclick="openCourtModal('Venkovní kurt 1 - Antuka')">
+              <div class="card-img-wrap">
+                <img src="https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=700&auto=format&fit=crop&q=80" alt="Tenisový kurt" class="card-img">
+                <span class="card-tag tag-open">Osvětlení k dispozici</span>
+              </div>
+              <div class="card-body">
+                <h3 class="card-title">Venkovní kurt 1 - Antuka</h3>
+                <p class="card-desc">Kvalitní červená antuka s večerním LED osvětlením a zázemím pro diváky.</p>
+                <div class="sport-pill-row">
+                  <span class="sport-pill"><i class="fa-solid fa-table-tennis-paddle-ball"></i> Tenis</span>
+                  <span class="sport-pill"><i class="fa-solid fa-futbol"></i> Nohejbal</span>
+                </div>
+                <div class="card-footer">
+                  <div><span class="price-tag">320 Kč</span> <span class="price-sub">/ hod</span></div>
+                  <button class="btn btn-primary btn-sm"><i class="fa-regular fa-calendar-check"></i> Detail & Sporty</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" onclick="openCourtModal('Hřiště s umělou trávou (UT)')">
+              <div class="card-img-wrap">
+                <img src="https://images.unsplash.com/photo-1529900748604-07564a03e7a6?w=700&auto=format&fit=crop&q=80" alt="Fotbalové hřiště" class="card-img">
+                <span class="card-tag tag-reserved">Částečně obsazeno</span>
+              </div>
+              <div class="card-body">
+                <h3 class="card-title">Hřiště s umělou trávou (UT 3G)</h3>
+                <p class="card-desc">Moderní certifikovaný povrch 3. generace FIFA Quality. Možnost rozdělit na 2 půlky.</p>
+                <div class="sport-pill-row">
+                  <span class="sport-pill"><i class="fa-solid fa-futbol"></i> Malá kopaná</span>
+                  <span class="sport-pill"><i class="fa-solid fa-baseball-bat-ball"></i> Ragby</span>
+                </div>
+                <div class="card-footer">
+                  <div><span class="price-tag">950 Kč</span> <span class="price-sub">/ hod</span></div>
+                  <button class="btn btn-primary btn-sm"><i class="fa-regular fa-calendar-check"></i> Detail & Sporty</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" onclick="openCourtModal('Zrcadlový sál & Gym B')">
+              <div class="card-img-wrap">
+                <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=700&auto=format&fit=crop&q=80" alt="Zrcadlový sál" class="card-img">
+                <span class="card-tag tag-open">Ozvučení v ceně</span>
+              </div>
+              <div class="card-body">
+                <h3 class="card-title">Zrcadlový sál & Gym B</h3>
+                <p class="card-desc">Klimatizovaný sál se zrcadlovou stěnou, audio soupravou a pomůckami na cvičení.</p>
+                <div class="sport-pill-row">
+                  <span class="sport-pill"><i class="fa-solid fa-spa"></i> Jóga / Pilates</span>
+                  <span class="sport-pill"><i class="fa-solid fa-fire"></i> Kruhový trénink</span>
+                  <span class="sport-pill"><i class="fa-solid fa-music"></i> Tanec</span>
+                </div>
+                <div class="card-footer">
+                  <div><span class="price-tag">450 Kč</span> <span class="price-sub">/ hod</span></div>
+                  <button class="btn btn-primary btn-sm"><i class="fa-regular fa-calendar-check"></i> Detail & Sporty</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" onclick="openCourtModal('Beachvolejbalové kurty (2x)')">
+              <div class="card-img-wrap">
+                <img src="https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=700&auto=format&fit=crop&q=80" alt="Plážový volejbal" class="card-img">
+                <span class="card-tag tag-open">Jemný písek</span>
+              </div>
+              <div class="card-body">
+                <h3 class="card-title">Beachvolejbalové kurty (2x)</h3>
+                <p class="card-desc">Dvě hřiště s jemným křemičitým pískem a sprchou přímo u kurtu.</p>
+                <div class="sport-pill-row">
+                  <span class="sport-pill"><i class="fa-solid fa-volleyball"></i> Beachvolejbal</span>
+                </div>
+                <div class="card-footer">
+                  <div><span class="price-tag">380 Kč</span> <span class="price-sub">/ hod</span></div>
+                  <button class="btn btn-primary btn-sm"><i class="fa-regular fa-calendar-check"></i> Detail & Sporty</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" onclick="openCourtModal('Badminton & Squash zóna')">
+              <div class="card-img-wrap">
+                <img src="https://images.unsplash.com/photo-1599474924187-334a4ae5bd3c?w=700&auto=format&fit=crop&q=80" alt="Badminton kurt" class="card-img">
+                <span class="card-tag tag-open">4 kurty</span>
+              </div>
+              <div class="card-body">
+                <h3 class="card-title">Badminton & Squash zóna</h3>
+                <p class="card-desc">Čtyři badmintonové kurty Taraflex a 2 klimatizované squash boxy ASB.</p>
+                <div class="sport-pill-row">
+                  <span class="sport-pill"><i class="fa-solid fa-feather"></i> Badminton</span>
+                  <span class="sport-pill"><i class="fa-solid fa-table-tennis-paddle-ball"></i> Squash</span>
+                </div>
+                <div class="card-footer">
+                  <div><span class="price-tag">290 Kč</span> <span class="price-sub">/ hod</span></div>
+                  <button class="btn btn-primary btn-sm"><i class="fa-regular fa-calendar-check"></i> Detail & Sporty</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ================= TAB 2: TRÉNINKY & LEKCE ================= -->
+        <div class="view-content" id="tab-treninky">
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h2 style="font-size: 1.4rem;">Tréninky a vedené lekce</h2>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">
+                Zobrazení otevřených, uzavřených i jednorázových lekcí. 
+                <span id="adminApprovalBadge" style="display:none; color: #fbbf24; font-weight: 600;">(Čeká 1 žádost na schválení správcem)</span>
+              </p>
+            </div>
+            <div id="trainerActionHeader"></div>
+          </div>
+
+          <!-- Training List -->
+          <div id="trainingListContainer">
+            
+            <!-- Pending Approval Training -->
+            <div class="training-item" id="pendingTrainingItem" style="border: 1px dashed #f59e0b; background: rgba(245, 158, 11, 0.05);">
+              <div class="training-info">
+                <div class="training-icon-box" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);">
+                  <i class="fa-solid fa-clock"></i>
+                </div>
+                <div>
+                  <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; flex-wrap: wrap;">
+                    <h4 style="font-size: 1.05rem;" id="pTrainingTitle">Kondiční kruhový boot-camp (Čeká na schválení)</h4>
+                    <span class="badge-diff diff-hard">Náročnost: Pokročilý</span>
+                    <span class="card-tag tag-pending" style="position: static; font-size: 0.7rem; padding: 2px 8px;">Čeká na schválení správcem</span>
+                  </div>
+                  <div style="font-size: 0.85rem; color: var(--text-muted); display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <span><i class="fa-regular fa-clock"></i> Pátek 18:00 - 19:30</span>
+                    <span><i class="fa-solid fa-location-dot"></i> Hřiště s umělou trávou (UT)</span>
+                    <span><i class="fa-solid fa-user-tie"></i> Trenér: Mgr. Petr Kovář</span>
+                  </div>
+                  <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.4rem;">
+                    Navržená kapacita: <strong id="pTrainingCap">20 lidí</strong>. Šatna č. 3 vyžádána.
+                  </div>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.75rem;" id="pendingActionButtons"></div>
+            </div>
+
+            <!-- Training 1 -->
+            <div class="training-item" id="training-card-hiit">
+              <div class="training-info">
+                <div class="training-icon-box">
+                  <i class="fa-solid fa-fire"></i>
+                </div>
+                <div>
+                  <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; flex-wrap: wrap;">
+                    <h4 style="font-size: 1.05rem;">Intenzivní kruhový trénink (HIIT)</h4>
+                    <span class="badge-diff diff-hard">Náročnost: Pokročilý</span>
+                    <span style="font-size: 0.75rem; background: rgba(59,130,246,0.15); color: #60a5fa; padding: 2px 8px; border-radius: 4px;">Veřejný</span>
+                    <span class="payment-badge" style="font-size: 0.7rem;"><i class="fa-solid fa-check-double"></i> Schváleno správcem</span>
+                  </div>
+                  <div style="font-size: 0.85rem; color: var(--text-muted); display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <span><i class="fa-regular fa-clock"></i> Zítra 17:30 - 18:45</span>
+                    <span><i class="fa-solid fa-location-dot"></i> Zrcadlový sál & Gym B</span>
+                    <span><i class="fa-solid fa-user-tie"></i> Trenér: Mgr. Petr Kovář</span>
+                  </div>
+                  <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.4rem;">
+                    Obsazeno <strong id="hiitCount">18</strong> / <strong id="hiitCap">25</strong> účastníků. Šatna č. 3 vyčleněna.
+                  </div>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <div style="text-align: right;">
+                  <div style="font-size: 1.15rem; font-weight: 700; color: #10b981;">220 Kč</div>
+                  <div style="font-size: 0.7rem; color: var(--text-dim);">online kartou / QR</div>
+                </div>
+                <button class="btn btn-primary" onclick="openJoinTrainingModal('Intenzivní kruhový trénink (HIIT)', 'Petr Kovář', '220 Kč', 18, 25)">
+                  <i class="fa-solid fa-user-plus"></i> Přihlásit se
+                </button>
+                <button class="btn btn-outline btn-sm admin-only-btn" style="display:none;" onclick="openEditCapacityModal('Intenzivní kruhový trénink (HIIT)', 'hiitCap', 25)">
+                  <i class="fa-solid fa-pen-to-square"></i> Změnit kapacitu
+                </button>
+              </div>
+            </div>
+
+            <!-- Training 2 -->
+            <div class="training-item" id="training-card-joga">
+              <div class="training-info">
+                <div class="training-icon-box" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border-color: rgba(16,185,129,0.3);">
+                  <i class="fa-solid fa-spa"></i>
+                </div>
+                <div>
+                  <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; flex-wrap: wrap;">
+                    <h4 style="font-size: 1.05rem;">Ranní regenerační jóga & mobilita</h4>
+                    <span class="badge-diff diff-easy">Náročnost: Začátečník</span>
+                    <span style="font-size: 0.75rem; background: rgba(59,130,246,0.15); color: #60a5fa; padding: 2px 8px; border-radius: 4px;">Veřejný</span>
+                  </div>
+                  <div style="font-size: 0.85rem; color: var(--text-muted); display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <span><i class="fa-regular fa-clock"></i> Čtvrtek 07:15 - 08:15</span>
+                    <span><i class="fa-solid fa-location-dot"></i> Zrcadlový sál</span>
+                    <span><i class="fa-solid fa-user-tie"></i> Trenérka: Eliška Procházková</span>
+                  </div>
+                  <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.4rem;">
+                    Obsazeno <strong id="yogaCount">9</strong> / <strong id="yogaCap">15</strong> účastníků.
+                  </div>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <div style="text-align: right;">
+                  <div style="font-size: 1.15rem; font-weight: 700; color: #10b981;">190 Kč</div>
+                  <div style="font-size: 0.7rem; color: var(--text-dim);">online platba</div>
+                </div>
+                <button class="btn btn-primary" onclick="openJoinTrainingModal('Ranní regenerační jóga', 'Eliška Procházková', '190 Kč', 9, 15)">
+                  <i class="fa-solid fa-user-plus"></i> Přihlásit se
+                </button>
+                <button class="btn btn-outline btn-sm admin-only-btn" style="display:none;" onclick="openEditCapacityModal('Ranní regenerační jóga', 'yogaCap', 15)">
+                  <i class="fa-solid fa-pen-to-square"></i> Změnit kapacitu
+                </button>
+              </div>
+            </div>
+
+            <!-- Training 3 (Closed) -->
+            <div class="training-item">
+              <div class="training-info">
+                <div class="training-icon-box" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245,158,11,0.3);">
+                  <i class="fa-solid fa-shield"></i>
+                </div>
+                <div>
+                  <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; flex-wrap: wrap;">
+                    <h4 style="font-size: 1.05rem;">Juniorský fotbalový výběr U15 (Taktika)</h4>
+                    <span class="badge-diff diff-medium">Náročnost: Střední</span>
+                    <span style="font-size: 0.75rem; background: rgba(239, 68, 68, 0.15); color: #f87171; padding: 2px 8px; border-radius: 4px;">Uzavřený trénink</span>
+                  </div>
+                  <div style="font-size: 0.85rem; color: var(--text-muted); display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <span><i class="fa-regular fa-clock"></i> Pátek 16:00 - 17:30</span>
+                    <span><i class="fa-solid fa-location-dot"></i> Umělá tráva (UT)</span>
+                    <span><i class="fa-solid fa-user-tie"></i> Trenér: Martin Dvořák</span>
+                  </div>
+                  <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.4rem;">
+                    <strong>Zapsaná jména:</strong> 22 hráčů nahlášeno.
+                  </div>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <button class="btn btn-outline" disabled style="opacity: 0.6; cursor: not-allowed;">
+                  <i class="fa-solid fa-lock"></i> Pouze klub
+                </button>
+                <button class="btn btn-outline btn-sm admin-only-btn" style="display:none;" onclick="openEditCapacityModal('Juniorský fotbal U15', null, 25)">
+                  <i class="fa-solid fa-pen-to-square"></i> Kapacita
+                </button>
+              </div>
+            </div>
+
+            <!-- Training 4: One-on-one -->
+            <div class="training-item">
+              <div class="training-info">
+                <div class="training-icon-box" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; border-color: rgba(59,130,246,0.3);">
+                  <i class="fa-solid fa-person-running"></i>
+                </div>
+                <div>
+                  <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; flex-wrap: wrap;">
+                    <h4 style="font-size: 1.05rem;">Individuální technika tenisu (Jednorázový trénink)</h4>
+                    <span class="badge-diff diff-medium">Náročnost: Všechny úrovně</span>
+                    <span style="font-size: 0.75rem; background: rgba(139, 92, 246, 0.2); color: #c084fc; padding: 2px 8px; border-radius: 4px;">Jednorázový (1-4 os.)</span>
+                  </div>
+                  <div style="font-size: 0.85rem; color: var(--text-muted); display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <span><i class="fa-regular fa-clock"></i> Sobota 10:00 - 11:30</span>
+                    <span><i class="fa-solid fa-location-dot"></i> Venkovní kurt 1</span>
+                    <span><i class="fa-solid fa-user-tie"></i> Trenér: Radek Štěpánek st.</span>
+                  </div>
+                  <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.4rem;">
+                    Zbývá <strong>1 volné místo</strong> z kapacity 4 účastníků.
+                  </div>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <div style="text-align: right;">
+                  <div style="font-size: 1.15rem; font-weight: 700; color: #10b981;">550 Kč</div>
+                  <div style="font-size: 0.7rem; color: var(--text-dim);">včetně trenéra a kurtu</div>
+                </div>
+                <button class="btn btn-primary" onclick="openJoinTrainingModal('Individuální technika tenisu', 'Radek Štěpánek', '550 Kč', 3, 4)">
+                  <i class="fa-solid fa-user-plus"></i> Rezervovat místo
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ================= TAB 3: ŠATNY & ZÁZEMÍ ================= -->
+        <div class="view-content" id="tab-satny">
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h2 style="font-size: 1.4rem;">Správa šaten & kapacity zázemí</h2>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">
+                Živý přehled obsazenosti a přiřazení šaten k jednotlivým hřištím. 
+                <span id="adminLockerHint" style="display:none; color: #34d399; font-weight: 600;">(Jako správce můžete přímo měnit celkovou kapacitu skříněk a přiřazovat úkoly úklidu)</span>
+              </p>
+            </div>
+            <div id="lockerAdminActions"></div>
+          </div>
+
+          <div class="locker-map">
+            
+            <!-- Locker 1 -->
+            <div class="locker-card" id="locker-box-1">
+              <div class="locker-header">
+                <div>
+                  <h4 style="font-size: 1.05rem;">Šatna 1 - Muži A</h4>
+                  <div style="font-size: 0.8rem; color: var(--text-muted);"><i class="fa-solid fa-map-pin"></i> Přízemí vlevo u Haly A</div>
+                </div>
+                <span class="card-tag tag-open">Volná místa</span>
+              </div>
+              <p style="font-size: 0.8rem; color: var(--text-dim);">Přiřazeno k: Hala A (Florbal & Volejbal)</p>
+              
+              <div class="locker-progress">
+                <div class="locker-bar" id="lockerBar1" style="width: 45%; background: #10b981;"></div>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted);">
+                <span>Obsazeno <strong>9</strong> skříněk</span>
+                <span>Kapacita: <strong id="lockerCap1">20</strong> skříněk (<span id="lockerFree1">11</span> volno)</span>
+              </div>
+              <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 0.75rem; color: #94a3b8;"><i class="fa-solid fa-shower"></i> 4x sprcha, 2x WC</div>
+                <button class="btn btn-outline btn-sm admin-only-btn" style="display:none;" onclick="openLockerCapacityModal('Šatna 1 - Muži A', 'lockerCap1', 'lockerBar1', 'lockerFree1', 9, 20)">
+                  <i class="fa-solid fa-sliders"></i> Změnit kapacitu
+                </button>
+              </div>
+            </div>
+
+            <!-- Locker 2 -->
+            <div class="locker-card" id="locker-box-2">
+              <div class="locker-header">
+                <div>
+                  <h4 style="font-size: 1.05rem;">Šatna 2 - Ženy A</h4>
+                  <div style="font-size: 0.8rem; color: var(--text-muted);"><i class="fa-solid fa-map-pin"></i> Přízemí vpravo</div>
+                </div>
+                <span class="card-tag tag-open">Volná místa</span>
+              </div>
+              <p style="font-size: 0.8rem; color: var(--text-dim);">Přiřazeno k: Zrcadlový sál (Jóga & Tanec)</p>
+              
+              <div class="locker-progress">
+                <div class="locker-bar" id="lockerBar2" style="width: 30%; background: #10b981;"></div>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted);">
+                <span>Obsazeno <strong>6</strong> skříněk</span>
+                <span>Kapacita: <strong id="lockerCap2">20</strong> skříněk (<span id="lockerFree2">14</span> volno)</span>
+              </div>
+              <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 0.75rem; color: #94a3b8;"><i class="fa-solid fa-shower"></i> 4x sprcha, 2x WC</div>
+                <button class="btn btn-outline btn-sm admin-only-btn" style="display:none;" onclick="openLockerCapacityModal('Šatna 2 - Ženy A', 'lockerCap2', 'lockerBar2', 'lockerFree2', 6, 20)">
+                  <i class="fa-solid fa-sliders"></i> Změnit kapacitu
+                </button>
+              </div>
+            </div>
+
+            <!-- Locker 3 -->
+            <div class="locker-card" id="locker-box-3">
+              <div class="locker-header">
+                <div>
+                  <h4 style="font-size: 1.05rem;">Šatna 3 - Týmová velkokapacitní</h4>
+                  <div style="font-size: 0.8rem; color: var(--text-muted);"><i class="fa-solid fa-map-pin"></i> Koridor směrem k UT</div>
+                </div>
+                <span class="card-tag tag-reserved">Téměř plno</span>
+              </div>
+              <p style="font-size: 0.8rem; color: var(--text-dim);">Přiřazeno k: Trénink HIIT / Fotbal U15</p>
+              
+              <div class="locker-progress">
+                <div class="locker-bar" id="lockerBar3" style="width: 86%; background: #f59e0b;"></div>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted);">
+                <span>Obsazeno <strong>26</strong> skříněk</span>
+                <span>Kapacita: <strong id="lockerCap3">30</strong> skříněk (<span id="lockerFree3">4</span> volno)</span>
+              </div>
+              <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 0.75rem; color: #94a3b8;"><i class="fa-solid fa-shower"></i> 6x sprcha, masérský stůl</div>
+                <button class="btn btn-outline btn-sm admin-only-btn" style="display:none;" onclick="openLockerCapacityModal('Šatna 3 - Velkokapacitní', 'lockerCap3', 'lockerBar3', 'lockerFree3', 26, 30)">
+                  <i class="fa-solid fa-sliders"></i> Změnit kapacitu
+                </button>
+              </div>
+            </div>
+
+            <!-- Locker 4 -->
+            <div class="locker-card" id="locker-box-4">
+              <div class="locker-header">
+                <div>
+                  <h4 style="font-size: 1.05rem;">Šatna 4 - VIP & Trenérská</h4>
+                  <div style="font-size: 0.8rem; color: var(--text-muted);"><i class="fa-solid fa-map-pin"></i> 1. patro u trenérské kanceláře</div>
+                </div>
+                <span class="card-tag tag-open">K dispozici</span>
+              </div>
+              <p style="font-size: 0.8rem; color: var(--text-dim);">Přiřazeno k: Trenéři a instruktoři</p>
+              
+              <div class="locker-progress">
+                <div class="locker-bar" id="lockerBar4" style="width: 25%; background: #8b5cf6;"></div>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted);">
+                <span>Obsazeno <strong>2</strong> skříňky</span>
+                <span>Kapacita: <strong id="lockerCap4">8</strong> skříněk (<span id="lockerFree4">6</span> volno)</span>
+              </div>
+              <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 0.75rem; color: #94a3b8;"><i class="fa-solid fa-key"></i> PIN kód zámek</div>
+                <button class="btn btn-outline btn-sm admin-only-btn" style="display:none;" onclick="openLockerCapacityModal('Šatna 4 - Trenérská', 'lockerCap4', 'lockerBar4', 'lockerFree4', 2, 8)">
+                  <i class="fa-solid fa-sliders"></i> Změnit kapacitu
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ================= TAB 4: MOJE ZÁPISY & HISTORIE (UŽIVATEL) ================= -->
+        <div class="view-content" id="tab-moje-rezervace">
+          <div style="margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.4rem;">Moje přihlášky na tréninky & Historie</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">
+              Přehled všech lekcí a hřišť, kam jste aktuálně přihlášeni, a archív vašich proběhlých sportovních aktivit.
+            </p>
+          </div>
+
+          <!-- Section 1: Upcoming registrations -->
+          <h3 style="font-size: 1.1rem; margin-bottom: 0.75rem; color: #60a5fa;"><i class="fa-solid fa-calendar-days"></i> Nadcházející aktivní zápisy</h3>
+          <div id="userUpcomingContainer" style="display: flex; flex-direction: column; gap: 0.85rem; margin-bottom: 2rem;">
+            
+            <div class="training-item" style="border-left: 4px solid #3b82f6;">
+              <div class="training-info">
+                <div class="training-icon-box" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa;">
+                  <i class="fa-solid fa-dumbbell"></i>
+                </div>
+                <div>
+                  <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                    <h4 style="font-size: 1.05rem;">Intenzivní kruhový trénink (HIIT)</h4>
+                    <span class="badge-diff diff-hard">Pokročilý</span>
+                    <span class="payment-badge"><i class="fa-solid fa-check"></i> Zaplaceno online (220 Kč)</span>
+                  </div>
+                  <div style="font-size: 0.85rem; color: var(--text-muted); display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <span><i class="fa-regular fa-clock"></i> Zítra 17:30 - 18:45</span>
+                    <span><i class="fa-solid fa-location-dot"></i> Zrcadlový sál & Gym B</span>
+                    <span><i class="fa-solid fa-door-open"></i> Šatna č. 3 (Skříňka PIN: 4892)</span>
+                  </div>
+                  <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.4rem;">
+                    Účastník: <strong>Jan Novák</strong> (trenér Petr Kovář)
+                  </div>
+                </div>
+              </div>
+              <div>
+                <button class="btn btn-outline btn-sm" onclick="showToast('QR kód pro vstup byl zobrazen na displeji')">
+                  <i class="fa-solid fa-qrcode"></i> Vstupní QR kód
+                </button>
+              </div>
+            </div>
+
+            <div class="training-item" style="border-left: 4px solid #10b981;">
+              <div class="training-info">
+                <div class="training-icon-box" style="background: rgba(16, 185, 129, 0.15); color: #34d399;">
+                  <i class="fa-solid fa-table-tennis-paddle-ball"></i>
+                </div>
+                <div>
+                  <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                    <h4 style="font-size: 1.05rem;">Venkovní kurt 1 - Antuka (Pronájem hřiště)</h4>
+                    <span class="payment-badge"><i class="fa-solid fa-check"></i> Zaplaceno kartou (320 Kč)</span>
+                  </div>
+                  <div style="font-size: 0.85rem; color: var(--text-muted); display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <span><i class="fa-regular fa-clock"></i> Pátek 15:00 - 16:00</span>
+                    <span><i class="fa-solid fa-location-dot"></i> Kurt 1 Antuka</span>
+                    <span><i class="fa-solid fa-door-open"></i> Šatna č. 1</span>
+                  </div>
+                  <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.4rem;">
+                    Rezervace na jméno: <strong>Jan Novák</strong>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <button class="btn btn-outline btn-sm" onclick="showToast('Rezervace upravena')">
+                  <i class="fa-solid fa-calendar-check"></i> Detail rezervace
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Section 2: Past history -->
+          <h3 style="font-size: 1.1rem; margin-bottom: 0.75rem; color: #94a3b8;"><i class="fa-solid fa-clock-rotate-left"></i> Historie proběhlých návštěv & tréninků</h3>
+          <div style="background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--border-color); overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
+              <thead>
+                <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); background: rgba(0,0,0,0.2);">
+                  <th style="padding: 12px 14px;">Datum & Čas</th>
+                  <th style="padding: 12px 14px;">Trénink / Sportoviště</th>
+                  <th style="padding: 12px 14px;">Trenér</th>
+                  <th style="padding: 12px 14px;">Šatna</th>
+                  <th style="padding: 12px 14px;">Cena</th>
+                  <th style="padding: 12px 14px;">Stav účasti</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                  <td style="padding: 12px 14px;">Před 3 dny (Neděle 10:00)</td>
+                  <td style="padding: 12px 14px; font-weight: 600;">Ranní regenerační jóga</td>
+                  <td style="padding: 12px 14px;">Eliška Procházková</td>
+                  <td style="padding: 12px 14px;">Šatna č. 2</td>
+                  <td style="padding: 12px 14px;">190 Kč</td>
+                  <td style="padding: 12px 14px;"><span class="payment-badge"><i class="fa-solid fa-check"></i> Absolvováno</span></td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                  <td style="padding: 12px 14px;">Před týdnem (Úterý 18:00)</td>
+                  <td style="padding: 12px 14px; font-weight: 600;">Badminton kurt 2 (1 hod)</td>
+                  <td style="padding: 12px 14px;">-</td>
+                  <td style="padding: 12px 14px;">Šatna č. 1</td>
+                  <td style="padding: 12px 14px;">290 Kč</td>
+                  <td style="padding: 12px 14px;"><span class="payment-badge"><i class="fa-solid fa-check"></i> Absolvováno</span></td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                  <td style="padding: 12px 14px;">14. listopadu (Čtvrtek 17:30)</td>
+                  <td style="padding: 12px 14px; font-weight: 600;">Kruhový trénink (HIIT)</td>
+                  <td style="padding: 12px 14px;">Petr Kovář</td>
+                  <td style="padding: 12px 14px;">Šatna č. 3</td>
+                  <td style="padding: 12px 14px;">220 Kč</td>
+                  <td style="padding: 12px 14px;"><span class="payment-badge"><i class="fa-solid fa-check"></i> Absolvováno</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ================= TAB 5: INTERAKTIVNÍ KATALOG SPORTŮ S ROZKLIKEM ================= -->
+        <div class="view-content" id="tab-sporty-all">
+          <div style="margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.4rem;">Interaktivní katalog sportů</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">
+              <strong>Klikněte na libovolný sport:</strong> otevře se detailní karta se seznamem <strong>nejbližších tréninků</strong>, <strong>trenérů</strong>, kteří daný sport vedou, <strong>formou výuky</strong> (individuálně vs. kolektivně) a <strong>všemi prostorami areálu</strong>, kde se dá sport provozovat.
+            </p>
+          </div>
+
+          <div class="sports-interactive-grid" id="sportsInteractiveCatalog">
+            <!-- Populated via JavaScript dynamically -->
+          </div>
+        </div>
+
+        <!-- ================= TAB 6: PERSONÁL & ÚKOLY (ADMIN SEKCE) ================= -->
+        <div class="view-content" id="tab-zamestnanci">
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h2 style="font-size: 1.4rem;">Správa zaměstnanců & Přidělování úkolů</h2>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">
+                Zde administrátor zadává konkrétní úkoly personálu (např. <em>uklízečka Marie uklízí šatnu A v 20:00</em>, kontrola sítí, úprava antuky).
+              </p>
+            </div>
+            <div>
+              <button class="btn btn-emerald" onclick="openAddTaskModal()">
+                <i class="fa-solid fa-plus"></i> Přidat úkol zaměstnanci
+              </button>
+            </div>
+          </div>
+
+          <!-- Employee Task Cards Grid -->
+          <div class="tasks-board" id="staffTasksContainer">
+            
+            <!-- Employee 1: Uklízečka Marie -->
+            <div class="staff-card" id="staff-card-marie">
+              <div class="staff-header">
+                <div class="staff-avatar" style="background: linear-gradient(135deg, #ec4899, #be185d);">M</div>
+                <div style="flex: 1;">
+                  <h4 style="font-size: 1.05rem;">Marie Novotná</h4>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);"><i class="fa-solid fa-broom"></i> Úklidový servis & hygiena</div>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="openAddTaskModal('Marie Novotná')"><i class="fa-solid fa-plus"></i></button>
+              </div>
+
+              <div id="tasks-marie">
+                <div class="task-entry">
+                  <div>
+                    <div style="font-weight: 600;"><i class="fa-solid fa-clock" style="color: #60a5fa;"></i> 20:00 - Úklid Šatny A (č. 1)</div>
+                    <div style="font-size: 0.75rem; color: var(--text-dim);">Kompletní dezinfekce podlahy a sprch po florbalu</div>
+                  </div>
+                  <span class="task-status-pill status-pending">Čeká</span>
+                </div>
+
+                <div class="task-entry">
+                  <div>
+                    <div style="font-weight: 600;"><i class="fa-solid fa-clock" style="color: #60a5fa;"></i> 21:30 - Doplnění mýdel v Šatně 2</div>
+                    <div style="font-size: 0.75rem; color: var(--text-dim);">Kontrola ručníků a fénů v dámské šatně</div>
+                  </div>
+                  <span class="task-status-pill status-pending">Čeká</span>
+                </div>
+
+                <div class="task-entry">
+                  <div>
+                    <div style="font-weight: 600; text-decoration: line-through; color: var(--text-dim);"><i class="fa-solid fa-check" style="color: #10b981;"></i> 14:00 - Úklid Zrcadlového sálu</div>
+                    <div style="font-size: 0.75rem; color: var(--text-dim);">Vytření a setření zrcadel po dopoledních lekcích</div>
+                  </div>
+                  <span class="task-status-pill status-done">Hotovo</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Employee 2: Správce hřišť Josef -->
+            <div class="staff-card" id="staff-card-josef">
+              <div class="staff-header">
+                <div class="staff-avatar" style="background: linear-gradient(135deg, #f59e0b, #b45309);">J</div>
+                <div style="flex: 1;">
+                  <h4 style="font-size: 1.05rem;">Josef Kroupa</h4>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);"><i class="fa-solid fa-wrench"></i> Údržba povrchů & technika</div>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="openAddTaskModal('Josef Kroupa')"><i class="fa-solid fa-plus"></i></button>
+              </div>
+
+              <div id="tasks-josef">
+                <div class="task-entry">
+                  <div>
+                    <div style="font-weight: 600;"><i class="fa-solid fa-clock" style="color: #60a5fa;"></i> 19:00 - Zapnutí LED osvětlení kurtu 1</div>
+                    <div style="font-size: 0.75rem; color: var(--text-dim);">Příprava osvětlení pro večerní tenisový zápas</div>
+                  </div>
+                  <span class="task-status-pill status-pending">Čeká</span>
+                </div>
+
+                <div class="task-entry">
+                  <div>
+                    <div style="font-weight: 600;"><i class="fa-solid fa-clock" style="color: #60a5fa;"></i> 22:00 - Kropení a kartáčování antuky</div>
+                    <div style="font-size: 0.75rem; color: var(--text-dim);">Noční úprava kurtu 1 po celodenním provozu</div>
+                  </div>
+                  <span class="task-status-pill status-pending">Čeká</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Employee 3: Recepční Lucie -->
+            <div class="staff-card" id="staff-card-lucie">
+              <div class="staff-header">
+                <div class="staff-avatar" style="background: linear-gradient(135deg, #10b981, #047857);">L</div>
+                <div style="flex: 1;">
+                  <h4 style="font-size: 1.05rem;">Lucie Veselá</h4>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);"><i class="fa-solid fa-headset"></i> Recepce & Výdej vybavení</div>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="openAddTaskModal('Lucie Veselá')"><i class="fa-solid fa-plus"></i></button>
+              </div>
+
+              <div id="tasks-lucie">
+                <div class="task-entry">
+                  <div>
+                    <div style="font-weight: 600;"><i class="fa-solid fa-clock" style="color: #60a5fa;"></i> 17:15 - Příprava 25 podložek pro HIIT</div>
+                    <div style="font-size: 0.75rem; color: var(--text-dim);">Vydání pomůcek do Zrcadlového sálu pro trenéra Kováře</div>
+                  </div>
+                  <span class="task-status-pill status-pending">Čeká</span>
+                </div>
+
+                <div class="task-entry">
+                  <div>
+                    <div style="font-weight: 600;"><i class="fa-solid fa-clock" style="color: #60a5fa;"></i> 21:00 - Denní uzávěrka pokladny a terminálu</div>
+                    <div style="font-size: 0.75rem; color: var(--text-dim);">Kontrola tržeb platební brány a hotovosti</div>
+                  </div>
+                  <span class="task-status-pill status-pending">Čeká</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ================= TAB 7: KALENDÁŘ PROBĚHLÝCH TRÉNINKŮ & ZÁPISY (ADMIN) ================= -->
+        <div class="view-content" id="tab-kalendar-historie">
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h2 style="font-size: 1.4rem;">Kalendář a archiv proběhlých tréninků</h2>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">
+                Detailní evidence každého proběhlého tréninku: <strong>co to bylo za lekci</strong>, <strong>kdo tam byl (jmenný seznam)</strong> a <strong>co se dělalo (zápis trenéra)</strong>.
+              </p>
+            </div>
+            <div>
+              <button class="btn btn-outline" onclick="showToast('Export celého archívu docházky do PDF / Excel vygenerován')">
+                <i class="fa-solid fa-file-arrow-down"></i> Exportovat docházku
+              </button>
+            </div>
+          </div>
+
+          <div class="history-calendar">
+            
+            <!-- History Card 1 -->
+            <div class="history-card" onclick="openTrainingDetailModal('hiit-yesterday')">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+                <span style="font-size: 0.75rem; background: rgba(59,130,246,0.15); color: #60a5fa; padding: 2px 8px; border-radius: 4px;">
+                  <i class="fa-regular fa-calendar"></i> Včera (Úterý 17:30)
+                </span>
+                <span class="badge-diff diff-hard">Pokročilý</span>
+              </div>
+              <h4 style="font-size: 1.1rem; margin-bottom: 0.35rem;">HIIT & Tabata Spalovač</h4>
+              <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+                Trenér: <strong>Mgr. Petr Kovář</strong> • Místo: Gym B
+              </p>
+              <div style="background: rgba(255,255,255,0.03); padding: 8px 10px; border-radius: 6px; font-size: 0.78rem; margin-bottom: 0.75rem;">
+                <i class="fa-solid fa-users" style="color: #34d399;"></i> Účast: <strong>21 lidí</strong> (z 25 kapacita)
+              </div>
+              <div style="font-size: 0.8rem; color: #cbd5e1; line-height: 1.4;">
+                <em>"Kruhový trénink s kettly a švihadly, zaměření na výbušnost nohou a jádro..."</em>
+              </div>
+              <div style="margin-top: 0.75rem; color: #38bdf8; font-size: 0.8rem; font-weight: 600;">
+                Klikněte pro zobrazení jmen a zápisu <i class="fa-solid fa-arrow-right"></i>
+              </div>
+            </div>
+
+            <!-- History Card 2 -->
+            <div class="history-card" onclick="openTrainingDetailModal('u15-monday')">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+                <span style="font-size: 0.75rem; background: rgba(245,158,11,0.15); color: #fbbf24; padding: 2px 8px; border-radius: 4px;">
+                  <i class="fa-regular fa-calendar"></i> Pondělí 16:00
+                </span>
+                <span class="badge-diff diff-medium">Střední</span>
+              </div>
+              <h4 style="font-size: 1.1rem; margin-bottom: 0.35rem;">Fotbal U15 - Nácvik presinku</h4>
+              <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+                Trenér: <strong>Martin Dvořák</strong> • Umělá tráva (UT)
+              </p>
+              <div style="background: rgba(255,255,255,0.03); padding: 8px 10px; border-radius: 6px; font-size: 0.78rem; margin-bottom: 0.75rem;">
+                <i class="fa-solid fa-users" style="color: #34d399;"></i> Účast: <strong>19 hráčů</strong> (oddíl)
+              </div>
+              <div style="font-size: 0.8rem; color: #cbd5e1; line-height: 1.4;">
+                <em>"Trénink zkráceného hřiště 7 na 7, přechodová fáze a zakončení ze střední vzdálenosti..."</em>
+              </div>
+              <div style="margin-top: 0.75rem; color: #38bdf8; font-size: 0.8rem; font-weight: 600;">
+                Klikněte pro zobrazení jmen a zápisu <i class="fa-solid fa-arrow-right"></i>
+              </div>
+            </div>
+
+            <!-- History Card 3 -->
+            <div class="history-card" onclick="openTrainingDetailModal('joga-sunday')">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+                <span style="font-size: 0.75rem; background: rgba(16,185,129,0.15); color: #34d399; padding: 2px 8px; border-radius: 4px;">
+                  <i class="fa-regular fa-calendar"></i> Neděle 09:00
+                </span>
+                <span class="badge-diff diff-easy">Začátečník</span>
+              </div>
+              <h4 style="font-size: 1.1rem; margin-bottom: 0.35rem;">Power Jóga & Dechová cvičení</h4>
+              <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+                Trenérka: <strong>Eliška Procházková</strong> • Zrcadlový sál
+              </p>
+              <div style="background: rgba(255,255,255,0.03); padding: 8px 10px; border-radius: 6px; font-size: 0.78rem; margin-bottom: 0.75rem;">
+                <i class="fa-solid fa-users" style="color: #34d399;"></i> Účast: <strong>14 lidí</strong> (plno)
+              </div>
+              <div style="font-size: 0.8rem; color: #cbd5e1; line-height: 1.4;">
+                <em>"Uvolnění beder a hrudní páteře, nácvik hlubokého bráničního dechu a vedená relaxace..."</em>
+              </div>
+              <div style="margin-top: 0.75rem; color: #38bdf8; font-size: 0.8rem; font-weight: 600;">
+                Klikněte pro zobrazení jmen a zápisu <i class="fa-solid fa-arrow-right"></i>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ================= TAB 8: ADMIN DASHBOARD ================= -->
+        <div class="view-content" id="tab-sprava">
+          <div style="margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.4rem;">Administrátorský řídicí panel</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">
+              Komplexní přehled tržeb, schvalování tréninků a hřišť, kapacity šaten a personálu.
+            </p>
+          </div>
+
+          <!-- Admin Stats Cards -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+            <div style="background: var(--bg-card); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+              <div style="font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase;">Dnešní online tržba</div>
+              <div style="font-size: 1.6rem; font-weight: 800; color: #10b981; margin: 4px 0;">34 850 Kč</div>
+              <div style="font-size: 0.75rem; color: #34d399;"><i class="fa-solid fa-arrow-up"></i> +14% oproti minulému týdnu</div>
+            </div>
+            <div style="background: var(--bg-card); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+              <div style="font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase;">Čeká ke schválení</div>
+              <div style="font-size: 1.6rem; font-weight: 800; color: #f59e0b; margin: 4px 0;" id="adminPendingStat">1 trénink</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">Žádost trenéra P. Kováře</div>
+            </div>
+            <div style="background: var(--bg-card); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+              <div style="font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase;">Aktivní personál</div>
+              <div style="font-size: 1.6rem; font-weight: 800; color: #8b5cf6; margin: 4px 0;">3 na směně</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">6 aktivních úkolů dnes</div>
+            </div>
+            <div style="background: var(--bg-card); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+              <div style="font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase;">Celková kapacita šaten</div>
+              <div style="font-size: 1.6rem; font-weight: 800; color: #38bdf8; margin: 4px 0;" id="totalLockerStat">78 skříněk</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">4 šatny v provozu</div>
+            </div>
+          </div>
+
+          <!-- Pending Approvals Box for Admin -->
+          <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.5rem;" id="adminApprovalSection">
+            <h4 style="font-size: 1.05rem; color: #fbbf24; margin-bottom: 0.5rem;">
+              <i class="fa-solid fa-bell"></i> Čekající tréninky a hřiště na schválení:
+            </h4>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+              <div>
+                <div style="font-weight: 700; font-size: 0.95rem;">Kondiční kruhový boot-camp (Pátek 18:00)</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">Žadatel: Trenér Petr Kovář • Požadavek: Umělá tráva (UT) + Šatna 3 • Navržená kapacita: 20 lidí</div>
+              </div>
+              <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-emerald btn-sm" onclick="approvePendingTraining()">
+                  <i class="fa-solid fa-check"></i> Schválit trénink i prostor
+                </button>
+                <button class="btn btn-rose btn-sm" onclick="rejectPendingTraining()">
+                  <i class="fa-solid fa-xmark"></i> Zamítnout
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Admin Action Bar -->
+          <div style="background: var(--bg-card); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 1.5rem;">
+            <h4 style="font-size: 1rem; margin-bottom: 0.75rem;"><i class="fa-solid fa-wrench"></i> Rychlé akce správce:</h4>
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+              <button class="btn btn-emerald" onclick="openAddTaskModal()">
+                <i class="fa-solid fa-tasks"></i> Zadat nový úkol personálu
+              </button>
+              <button class="btn btn-outline" onclick="showAppTab('satny', document.querySelectorAll('.app-nav-tabs .tab-btn')[2])">
+                <i class="fa-solid fa-sliders"></i> Nastavit kapacity šaten
+              </button>
+              <button class="btn btn-outline" onclick="showAppTab('kalendar-historie', document.getElementById('adminHistoryTab'))">
+                <i class="fa-solid fa-calendar-check"></i> Zkontrolovat zápisy z tréninků
+              </button>
+              <button class="btn btn-outline" onclick="showToast('Export plateb Comgate/GoPay/Stripe vygenerován')">
+                <i class="fa-solid fa-file-invoice-dollar"></i> Účetní export plateb
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Detailed Feature Presentation -->
+  <section class="specs-section">
+    <h2 class="section-title">Co přináší verze 2.0 rezervačního systému?</h2>
+    <p class="section-sub">
+      Rozšíření o rozklik katalogu sportů, personální modul s úkoly, schvalovací procesy pro trenéry a archiv proběhlých tréninků i uživatelských účastí.
+    </p>
+
+    <div class="features-grid">
+      
+      <div class="feature-box">
+        <div class="feature-icon-wrapper fi-blue">
+          <i class="fa-solid fa-layer-group"></i>
+        </div>
+        <h3 style="font-size: 1.2rem; margin-bottom: 0.6rem;">Interaktivní rozklik sportů v katalogu</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">
+          Po kliknutí na kterýkoliv sport (fotbal, tenis, jóga, HIIT, badminton atd.) systém okamžitě zobrazí <strong>nejbližší vypsané tréninky</strong>, <strong>konkrétní trenéry</strong>, <strong>formu lekce (individuální vs. skupinová/kolektivní)</strong> a <strong>seznam všech prostor a hřišť</strong>, kde se dá sport v areálu provozovat.
+        </p>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-icon-wrapper fi-rose">
+          <i class="fa-solid fa-clipboard-check"></i>
+        </div>
+        <h3 style="font-size: 1.2rem; margin-bottom: 0.6rem;">Sekce zaměstnanců & Přidělování úkolů</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">
+          Správce má přehled o personálu (např. uklízečka Marie, správce hřišť Josef, recepční). Může zadávat časované úkoly — <em>např. "Uklízečka Marie: úklid šatny A v 20:00"</em> či <em>"Josef: kropení antuky v 22:00"</em> včetně sledování stavu splnění.
+        </p>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-icon-wrapper fi-green">
+          <i class="fa-solid fa-sliders"></i>
+        </div>
+        <h3 style="font-size: 1.2rem; margin-bottom: 0.6rem;">Správa kapacit šaten i tréninků</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">
+          Správce areálu má plnou kontrolu nad kapacitami. Může u libovolné šatny jedním kliknutím navýšit či snížit počet dostupných skříněk a u vypsaných tréninků operativně upravit limit účastníků podle aktuální poptávky.
+        </p>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-icon-wrapper fi-amber">
+          <i class="fa-solid fa-stamp"></i>
+        </div>
+        <h3 style="font-size: 1.2rem; margin-bottom: 0.6rem;">Schvalování tréninků & prostorů</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">
+          Trenér vygeneruje návrh tréninku a systém jej automaticky zařadí do schvalovací fronty administrátora. Správce prověří kolize hřišť a šaten a trénink schválí nebo upraví.
+        </p>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-icon-wrapper fi-blue">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+        </div>
+        <h3 style="font-size: 1.2rem; margin-bottom: 0.6rem;">Klientský přehled: Kam jsem zapsán & Historie</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">
+          Každý uživatel má svou přehledovou sekci, kde vidí nadcházející rezervace s QR kódem a číslem přidělené šatny i kompletní archív minulých návštěv a absolvovaných tréninků.
+        </p>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-icon-wrapper fi-purple">
+          <i class="fa-solid fa-calendar-days"></i>
+        </div>
+        <h3 style="font-size: 1.2rem; margin-bottom: 0.6rem;">Kalendář proběhlých tréninků & Zápisy</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">
+          Správce má k dispozici historický kalendář. U každé proběhlé lekce může kdykoliv rozkliknout detail: <strong>co to bylo za trénink</strong>, <strong>kdo tam byl (jmenný seznam účastníků)</strong> a <strong>co se dělalo (zápis a poznámky trenéra)</strong>.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= MODALS ================= -->
+
+  <!-- Modal 1: Detail hřiště & seznam sportů -->
+  <div class="modal-overlay" id="courtModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modalCourtTitle" style="font-size: 1.2rem;">Detail hřiště</h3>
+        <button class="modal-close-btn" onclick="closeModal('courtModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div style="width: 100%; height: 200px; border-radius: var(--radius-sm); overflow: hidden; margin-bottom: 1rem;">
+          <img id="modalCourtImg" src="" alt="Sportoviště" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+
+        <h4 style="font-size: 1rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-medal" style="color: #60a5fa;"></i> Jaké sporty se zde dají hrát:</h4>
+        <div id="modalSportsList" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem;"></div>
+
+        <h4 style="font-size: 1rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-door-closed" style="color: #10b981;"></i> Přiřazená šatna a zázemí:</h4>
+        <p id="modalLockerInfo" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">Šatna č. 1 v přízemí.</p>
+
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1.25rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span style="font-size: 0.9rem; font-weight: 600;">Cena rezervace:</span>
+            <span style="font-size: 1.2rem; font-weight: 700; color: #38bdf8;" id="modalPrice">650 Kč / hod</span>
+          </div>
+          <div style="font-size: 0.8rem; color: var(--text-dim);">
+            Online platba s okamžitým potvrzením a SMS kódem ke skříňce v šatně.
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem;">
+          <button class="btn btn-primary" style="flex: 1;" onclick="openBookingStep()">
+            <i class="fa-solid fa-calendar-check"></i> Vybrat čas & Zaplatit online
+          </button>
+          <button class="btn btn-outline" onclick="closeModal('courtModal')">Zavřít</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: ROZKLIK SPORTU V KATALOGU (NEW!) -->
+  <div class="modal-overlay" id="sportDetailModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="sportModalHeaderTitle" style="font-size: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fa-solid fa-medal" style="color: #60a5fa;"></i> Detail sportu
+        </h3>
+        <button class="modal-close-btn" onclick="closeModal('sportDetailModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- Short description & mode -->
+        <p id="sportModalDesc" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.25rem;"></p>
+
+        <!-- Form: Individual vs Collective -->
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 1.25rem;">
+          <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 4px;">Forma provozování</div>
+          <div id="sportModalFormType" style="font-size: 1rem; font-weight: 700; color: #38bdf8; display: flex; align-items: center; gap: 6px;">
+            <!-- Injected -->
+          </div>
+        </div>
+
+        <!-- Where it can be played (Courts) -->
+        <h4 style="font-size: 0.95rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-map-location-dot" style="color: #10b981;"></i> V jakých prostorách se dá sport provozovat:</h4>
+        <div id="sportModalCourtsList" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem;">
+          <!-- Injected -->
+        </div>
+
+        <!-- Trainers who coach it -->
+        <h4 style="font-size: 0.95rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-user-tie" style="color: #c084fc;"></i> Trenéři, kteří tento sport vedou:</h4>
+        <div id="sportModalTrainersList" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem;">
+          <!-- Injected -->
+        </div>
+
+        <!-- Upcoming trainings for this sport -->
+        <h4 style="font-size: 0.95rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-calendar-check" style="color: #f59e0b;"></i> Nejbližší vypsané tréninky na toto téma:</h4>
+        <div id="sportModalTrainingsList" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.5rem;">
+          <!-- Injected -->
+        </div>
+
+        <div style="display: flex; justify-content: flex-end;">
+          <button class="btn btn-outline" onclick="closeModal('sportDetailModal')">Zavřít detail sportu</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 3: Trenér - Vytvořit trénink -->
+  <div class="modal-overlay" id="trainerCreateModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 style="font-size: 1.2rem;"><i class="fa-solid fa-dumbbell" style="color: #a855f7;"></i> Rezervace vedeného tréninku (Trenér)</h3>
+        <button class="modal-close-btn" onclick="closeModal('trainerCreateModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="handleCreateTraining(event)">
+          <div class="form-group">
+            <label class="form-label">Název tréninku / lekce</label>
+            <input type="text" class="form-control" id="trName" required placeholder="např. Kruhový trénink pro začátečníky nebo Individuální tenis">
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Typ lekce</label>
+              <select class="form-control" id="trType">
+                <option value="public">Veřejný trénink (otevřený komukoliv)</option>
+                <option value="closed">Uzavřený trénink (pouze zvaní svěřenci)</option>
+                <option value="one-on-one">Jednorázový soukromý trénink (1-4 os.)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Stupeň náročnosti</label>
+              <select class="form-control" id="trDiff">
+                <option value="Začátečník">Začátečník (Light / Hobby)</option>
+                <option value="Střední">Středně pokročilý (Medium)</option>
+                <option value="Pokročilý">Pokročilý (High Intensity / Pro)</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Výběr sportoviště</label>
+              <select class="form-control" id="trCourt">
+                <option>Hala A - Multifunkční palubovka</option>
+                <option>Zrcadlový sál & Gym B</option>
+                <option>Venkovní kurt 1 - Antuka</option>
+                <option>Hřiště s umělou trávou (UT)</option>
+                <option>Beachvolejbalové kurty</option>
+                <option>Badminton & Squash zóna</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Počet účastníků (1 až 30 lidí)</label>
+              <input type="number" class="form-control" id="trCapacity" min="1" max="30" value="15" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Přiřadit šatnu pro svěřence</label>
+            <select class="form-control" id="trLocker">
+              <option>Šatna 1 - Muži A</option>
+              <option>Šatna 2 - Ženy A</option>
+              <option>Šatna 3 - Týmová velkokapacitní</option>
+              <option>Šatna 4 - VIP & Trenérská</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Jména zapsaných účastníků (oddělená čárkou)</label>
+            <textarea class="form-control" id="trParticipants" rows="3" placeholder="např. Tomáš Dvořák, Martin Král, Lucie Veselá..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Cena za účastníka (Kč)</label>
+            <input type="number" class="form-control" id="trPrice" value="220" required>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
+            <button type="submit" class="btn btn-purple" style="flex: 1;">
+              <i class="fa-solid fa-paper-plane"></i> Odeslat ke schválení správci
+            </button>
+            <button type="button" class="btn btn-outline" onclick="closeModal('trainerCreateModal')">Zrušit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 4: Přidělení úkolu zaměstnanci (Admin) -->
+  <div class="modal-overlay" id="addTaskModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 style="font-size: 1.2rem;"><i class="fa-solid fa-tasks" style="color: #10b981;"></i> Zadat úkol zaměstnanci</h3>
+        <button class="modal-close-btn" onclick="closeModal('addTaskModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="handleAddTaskSubmit(event)">
+          <div class="form-group">
+            <label class="form-label">Vyberte zaměstnance</label>
+            <select class="form-control" id="taskStaffSelect">
+              <option value="marie">Marie Novotná (Úklid & Hygiena)</option>
+              <option value="josef">Josef Kroupa (Správce ploch & technika)</option>
+              <option value="lucie">Lucie Veselá (Recepce & Vybavení)</option>
+            </select>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Čas provedení úkolu</label>
+              <input type="time" class="form-control" id="taskTime" value="20:00" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Místo v areálu</label>
+              <select class="form-control" id="taskLocation">
+                <option value="Šatna A (č. 1)">Šatna A (č. 1)</option>
+                <option value="Šatna 2 - Ženy">Šatna 2 - Ženy</option>
+                <option value="Šatna 3 - Týmová">Šatna 3 - Týmová</option>
+                <option value="Hala A">Hala A</option>
+                <option value="Venkovní kurt 1">Venkovní kurt 1</option>
+                <option value="Zrcadlový sál">Zrcadlový sál</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Název a popis úkolu</label>
+            <input type="text" class="form-control" id="taskTitle" required value="Úklid šatny A v 20:00" placeholder="např. Úklid šatny A, dezinfekce podlahy...">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Detailní instrukce pro zaměstnance</label>
+            <textarea class="form-control" id="taskDetails" rows="3" placeholder="Instrukce...">Důkladný úklid podlahy a sprchového koutu po večerním florbalovém zápase.</textarea>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
+            <button type="submit" class="btn btn-emerald" style="flex: 1;">
+              <i class="fa-solid fa-plus"></i> Uložit a odeslat zaměstnanci
+            </button>
+            <button type="button" class="btn btn-outline" onclick="closeModal('addTaskModal')">Zrušit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 5: Editace kapacity šatny (Admin) -->
+  <div class="modal-overlay" id="editLockerModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 style="font-size: 1.2rem;"><i class="fa-solid fa-sliders" style="color: #38bdf8;"></i> Nastavení kapacity šatny (Správce)</h3>
+        <button class="modal-close-btn" onclick="closeModal('editLockerModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="handleLockerCapacitySave(event)">
+          <div class="form-group">
+            <label class="form-label">Šatna</label>
+            <input type="text" class="form-control" id="editLockerName" readonly style="opacity: 0.7;">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Aktuálně obsazených skříněk (pevné)</label>
+            <input type="number" class="form-control" id="editLockerOccupied" readonly style="opacity: 0.7;">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Celková kapacita skříněk (změňte hodnotu)</label>
+            <input type="number" class="form-control" id="editLockerTotal" min="10" max="60" required>
+            <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 4px;">
+              Můžete navýšit přidáním přenosných skříněk nebo zmenšit při údržbě.
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
+            <button type="submit" class="btn btn-emerald" style="flex: 1;">
+              <i class="fa-solid fa-check"></i> Uložit novou kapacitu
+            </button>
+            <button type="button" class="btn btn-outline" onclick="closeModal('editLockerModal')">Zavřít</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 6: Editace kapacity tréninku (Admin) -->
+  <div class="modal-overlay" id="editTrainingCapModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 style="font-size: 1.2rem;"><i class="fa-solid fa-users" style="color: #8b5cf6;"></i> Úprava kapacity účastníků na tréninku</h3>
+        <button class="modal-close-btn" onclick="closeModal('editTrainingCapModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="handleTrainingCapSave(event)">
+          <div class="form-group">
+            <label class="form-label">Trénink</label>
+            <input type="text" class="form-control" id="editTrCapName" readonly style="opacity: 0.7;">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Maximální povolený počet účastníků (1 - 40 osob)</label>
+            <input type="number" class="form-control" id="editTrCapValue" min="1" max="40" required>
+          </div>
+          <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
+            <button type="submit" class="btn btn-emerald" style="flex: 1;">
+              <i class="fa-solid fa-check"></i> Potvrdit novou kapacitu
+            </button>
+            <button type="button" class="btn btn-outline" onclick="closeModal('editTrainingCapModal')">Zavřít</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 7: Detail proběhlého tréninku (Zápis, docházka a co se dělalo) -->
+  <div class="modal-overlay" id="trainingDetailModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 style="font-size: 1.2rem;" id="histModalTitle"><i class="fa-solid fa-clipboard-list" style="color: #3b82f6;"></i> Detail proběhlého tréninku</h3>
+        <button class="modal-close-btn" onclick="closeModal('trainingDetailModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 1.25rem;">
+          <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+            <div>
+              <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase;">Termín & Místo</div>
+              <div style="font-weight: 700;" id="histModalWhen">Včera 17:30 - 18:45 | Gym B</div>
+            </div>
+            <div>
+              <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase;">Vedení tréninku</div>
+              <div style="font-weight: 700;" id="histModalCoach">Mgr. Petr Kovář</div>
+            </div>
+          </div>
+        </div>
+
+        <h4 style="font-size: 1rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-users" style="color: #10b981;"></i> Prezenční listina - Kdo tam byl (<span id="histModalCount">21</span> účastníků):</h4>
+        <div id="histModalParticipantsList" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 0.85rem; max-height: 140px; overflow-y: auto; margin-bottom: 1.25rem; line-height: 1.8;"></div>
+
+        <h4 style="font-size: 1rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-book-open" style="color: #f59e0b;"></i> Zápis trenéra - Co se na tréninku dělalo:</h4>
+        <div id="histModalLog" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 0.85rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 1.5rem;"></div>
+
+        <div style="display: flex; justify-content: flex-end;">
+          <button class="btn btn-outline" onclick="closeModal('trainingDetailModal')">Zavřít detail</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 8: Přihlášení na trénink & online platba -->
+  <div class="modal-overlay" id="joinTrainingModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 style="font-size: 1.2rem;"><i class="fa-solid fa-ticket" style="color: #10b981;"></i> Rezervace místa na tréninku</h3>
+        <button class="modal-close-btn" onclick="closeModal('joinTrainingModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div style="margin-bottom: 1.25rem;">
+          <h4 id="joinTrainingTitle" style="font-size: 1.15rem; margin-bottom: 0.25rem;">Trénink</h4>
+          <p id="joinTrainingTrainer" style="font-size: 0.85rem; color: var(--text-muted);">Trenér: ...</p>
+        </div>
+
+        <form onsubmit="handleJoinTrainingSubmit(event)">
+          <div class="form-group">
+            <label class="form-label">Jméno a příjmení účastníka</label>
+            <input type="text" class="form-control" id="joinUserName" required placeholder="Vaše jméno a příjmení" value="Jan Novák">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">E-mail pro zaslání potvrzení & QR kódu</label>
+            <input type="email" class="form-control" required placeholder="vas@email.cz" value="novak.jan@gmail.com">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Telefon (pro SMS kód k šatně a hřišti)</label>
+            <input type="tel" class="form-control" required placeholder="+420 777 123 456" value="+420 777 456 789">
+          </div>
+
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <span style="font-size: 0.9rem;">Cena lekce:</span>
+              <span style="font-size: 1.25rem; font-weight: 700; color: #10b981;" id="joinPrice">220 Kč</span>
+            </div>
+            
+            <div style="margin-top: 0.75rem;">
+              <label class="form-label">Způsob online platby:</label>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.5rem;">
+                <label style="border: 1px solid var(--primary); background: rgba(59,130,246,0.1); padding: 8px; border-radius: 6px; display: flex; align-items: center; gap: 6px; font-size: 0.8rem; cursor: pointer;">
+                  <input type="radio" name="payType" checked> <i class="fa-solid fa-credit-card"></i> Karta / Apple Pay
+                </label>
+                <label style="border: 1px solid var(--border-color); padding: 8px; border-radius: 6px; display: flex; align-items: center; gap: 6px; font-size: 0.8rem; cursor: pointer;">
+                  <input type="radio" name="payType"> <i class="fa-solid fa-qrcode"></i> Okamžitá QR platba
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem;">
+            <button type="submit" class="btn btn-emerald" style="flex: 1;">
+              <i class="fa-solid fa-lock"></i> Zaplatit a dokončit rezervaci
+            </button>
+            <button type="button" class="btn btn-outline" onclick="closeModal('joinTrainingModal')">Zavřít</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 9: Online platby info -->
+  <div class="modal-overlay" id="paymentModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 style="font-size: 1.2rem;"><i class="fa-solid fa-credit-card" style="color: #60a5fa;"></i> Integrovaná platební brána</h3>
+        <button class="modal-close-btn" onclick="closeModal('paymentModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+          Rezervační systém podporuje okamžité online platby s přímou vazbou na zámky šaten a turnikety areálu:
+        </p>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem;">
+          <div style="background: var(--bg-card); padding: 0.75rem 1rem; border-radius: 8px; display: flex; align-items: center; gap: 0.75rem;">
+            <i class="fa-brands fa-apple" style="font-size: 1.5rem;"></i>
+            <div>
+              <div style="font-weight: 600; font-size: 0.9rem;">Apple Pay & Google Pay</div>
+              <div style="font-size: 0.75rem; color: var(--text-dim);">Rychlá platba jedním dotykem bez opisování karty</div>
+            </div>
+          </div>
+          <div style="background: var(--bg-card); padding: 0.75rem 1rem; border-radius: 8px; display: flex; align-items: center; gap: 0.75rem;">
+            <i class="fa-solid fa-credit-card" style="font-size: 1.3rem; color: #60a5fa;"></i>
+            <div>
+              <div style="font-weight: 600; font-size: 0.9rem;">Platební karty Visa / Mastercard</div>
+              <div style="font-size: 0.75rem; color: var(--text-dim);">Okamžitá autorizace 3D Secure</div>
+            </div>
+          </div>
+          <div style="background: var(--bg-card); padding: 0.75rem 1rem; border-radius: 8px; display: flex; align-items: center; gap: 0.75rem;">
+            <i class="fa-solid fa-qrcode" style="font-size: 1.4rem; color: #10b981;"></i>
+            <div>
+              <div style="font-weight: 600; font-size: 0.9rem;">Okamžitá QR platba</div>
+              <div style="font-size: 0.75rem; color: var(--text-dim);">Pro mobilní bankovnictví všech českých bank</div>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-primary" style="width: 100%;" onclick="closeModal('paymentModal')">Rozumím</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toastNotification">
+    <i class="fa-solid fa-circle-check" style="color: #10b981; font-size: 1.2rem;"></i>
+    <span id="toastMessage">Rezervace byla úspěšně zpracována!</span>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div style="display: flex; align-items: center; gap: 0.5rem; font-weight: 700; color: #fff;">
+        <i class="fa-solid fa-bolt" style="color: #3b82f6;"></i> SportFlow v2.0 Enterprise &copy; 2026
+      </div>
+      <div>
+        Ukázková prezentace: rozklik katalogu sportů, úkoly personálu, schvalování tréninků, kapacity šaten & historie.
+      </div>
+      <div>
+        <a href="#mockupFrame" style="color: #60a5fa; text-decoration: none;" onclick="window.scrollTo({top: 250, behavior: 'smooth'})">
+          <i class="fa-solid fa-arrow-up"></i> Zpět k simulátoru
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Interactive JavaScript logic -->
+  <script>
+    // State
+    let currentRole = 'user'; // 'user' | 'trainer' | 'admin'
+    let currentDevice = 'desktop';
+
+    // Sports Data mapping for courts
+    const courtDetails = {
+      'Hala A - Multifunkční palubovka': {
+        img: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=900&auto=format&fit=crop&q=80',
+        price: '650 Kč / hod',
+        locker: 'Šatna č. 1 (Muži) a Šatna č. 2 (Ženy) v přízemí přímo u vchodu do haly.',
+        sports: [
+          { name: 'Volejbal', desc: 'Certifikovaná síť, anténky a sloupky k dispozici, míče Mikasa v ceně.', icon: 'fa-volleyball' },
+          { name: 'Basketbal', desc: 'Odpružené koše se zatahovacími mechanismy, standard FIBA.', icon: 'fa-basketball' },
+          { name: 'Futsal', desc: 'Oficiální futsalové branky 3x2 m se sítěmi, brankářské vybavení.', icon: 'fa-futbol' },
+          { name: 'Florbal', desc: 'Kompletní plastové mantinely IFF rozměr 40x20 m, 2 certifikované branky.', icon: 'fa-circle-dot' },
+          { name: 'Házená', desc: 'Vymezená plocha a branky pro soutěžní utkání.', icon: 'fa-futbol' }
+        ]
+      },
+      'Venkovní kurt 1 - Antuka': {
+        img: 'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=900&auto=format&fit=crop&q=80',
+        price: '320 Kč / hod',
+        locker: 'Šatna č. 1 nebo přilehlá venkovní sprchová buňka.',
+        sports: [
+          { name: 'Tenis (Dvouhra i Čtyřhra)', desc: 'Pravidelně kropená antuka, lajny, síť s regulací, lavičky pro hráče.', icon: 'fa-table-tennis-paddle-ball' },
+          { name: 'Nohejbal', desc: 'Možnost snížení sítě pro nohejbalové dvojice a trojice.', icon: 'fa-futbol' }
+        ]
+      },
+      'Hřiště s umělou trávou (UT)': {
+        img: 'https://images.unsplash.com/photo-1529900748604-07564a03e7a6?w=900&auto=format&fit=crop&q=80',
+        price: '950 Kč / hod celá plocha (500 Kč / půlka)',
+        locker: 'Šatna č. 3 - Týmová velkokapacitní pro 30 osob s přímým vstupem.',
+        sports: [
+          { name: 'Malá i velká kopaná', desc: 'Možnost hrát na celou plochu (11v11) nebo přepažit na dvě mini-hřiště (branky 5x2m).', icon: 'fa-futbol' },
+          { name: 'Americký fotbal & Ragby', desc: 'Tréninkové terče a kužely k dispozici.', icon: 'fa-baseball-bat-ball' },
+          { name: 'Lacrosse', desc: 'Odolný povrch s gumovým granulátem 3. generace.', icon: 'fa-baseball-bat-ball' }
+        ]
+      },
+      'Zrcadlový sál & Gym B': {
+        img: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=900&auto=format&fit=crop&q=80',
+        price: '450 Kč / hod',
+        locker: 'Šatna č. 2 - Ženy A a Šatna č. 4 - Trenérská.',
+        sports: [
+          { name: 'Jóga, Power Jóga & Pilates', desc: 'K dispozici 25 cvičebních podložek, bloky a popruhy.', icon: 'fa-spa' },
+          { name: 'Kruhový trénink & HIIT', desc: 'Kettlebelly, švihadla, plyometrické bedny, TRX popruhy.', icon: 'fa-fire' },
+          { name: 'Bojová umění (Karate, Judo, Sebeobrana)', desc: 'Rozložitelné tatami podložky 50 m2.', icon: 'fa-hand-fist' },
+          { name: 'Taneční lekce & Zumba', desc: 'Plné ozvučení s Bluetooth připojením a zrcadla po celé stěně.', icon: 'fa-music' }
+        ]
+      },
+      'Beachvolejbalové kurty (2x)': {
+        img: 'https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=900&auto=format&fit=crop&q=80',
+        price: '380 Kč / hod za 1 kurt',
+        locker: 'Šatna č. 1 a venkovní sprchy na omytí písku.',
+        sports: [
+          { name: 'Plážový volejbal (Beachvolejbal)', desc: 'Speciální bezprašný jemný křemičitý písek, polstrované sloupky.', icon: 'fa-volleyball' },
+          { name: 'Plážový tenis (Beach tennis)', desc: 'Půjčení raket a míčků na recepci.', icon: 'fa-table-tennis-paddle-ball' }
+        ]
+      },
+      'Badminton & Squash zóna': {
+        img: 'https://images.unsplash.com/photo-1599474924187-334a4ae5bd3c?w=900&auto=format&fit=crop&q=80',
+        price: '290 Kč / hod (Badminton), 350 Kč (Squash)',
+        locker: 'Šatna č. 1 i Šatna č. 2 na patře.',
+        sports: [
+          { name: 'Badminton (4 kurty)', desc: 'Profesionální povrch Taraflex, neoslňující vertikální LED světla.', icon: 'fa-feather' },
+          { name: 'Squash (2 kurty)', desc: 'Prosklená zadní stěna, parketová podlaha Haro.', icon: 'fa-table-tennis-paddle-ball' },
+          { name: 'Stolní tenis (Ping-pong)', desc: '2x vnitřní stoly Cornilleau s ohrádkami.', icon: 'fa-table-tennis' }
+        ]
+      }
+    };
+
+    // ================= RICH SPORTS CATALOG FOR DRILL-DOWN =================
+    const sportsCatalogDetailed = [
+      {
+        id: 'tenis',
+        name: 'Tenis (Dvouhra & Čtyřhra)',
+        icon: 'fa-table-tennis-paddle-ball',
+        iconColor: '#f59e0b',
+        iconBg: 'rgba(245, 158, 11, 0.15)',
+        desc: 'Klasický raketový sport na antuce pro 2 až 4 hráče.',
+        form: 'Individuální (1 na 1) i Kolektivní / debly (2 až 4 hráči)',
+        courts: ['Venkovní kurt 1 - Antuka', 'Venkovní kurt 2 - Antuka', 'Zimní přetlaková hala'],
+        trainers: [
+          { name: 'Radek Štěpánek st.', cert: 'I. trenérská třída ČTS', focus: 'Technika úderů, podání a sparing' },
+          { name: 'Bc. Tomáš Berdych ml.', cert: 'Kondiční specialista ČTS', focus: 'Pohyb po kurtu a práce nohou' }
+        ],
+        trainings: [
+          { title: 'Individuální technika tenisu (1-4 os.)', time: 'Sobota 10:00 - 11:30', coach: 'Radek Štěpánek', price: '550 Kč', court: 'Venkovní kurt 1' },
+          { title: 'Dětská tenisová akademie (Hobby kroužek)', time: 'Středa 15:30 - 16:30', coach: 'Tomáš Berdych ml.', price: '180 Kč', court: 'Kurt 2' }
+        ]
+      },
+      {
+        id: 'fotbal',
+        name: 'Fotbal & Malá kopaná',
+        icon: 'fa-futbol',
+        iconColor: '#60a5fa',
+        iconBg: 'rgba(59, 130, 246, 0.15)',
+        desc: 'Nejpopulárnější kolektivní míčový sport na trávě i palubovce.',
+        form: 'Kolektivní sport (týmy 5v5 až 11v11, 10 až 24 osob)',
+        courts: ['Hřiště s umělou trávou (UT 3G)', 'Hala A - Multifunkční palubovka (Futsal)'],
+        trainers: [
+          { name: 'Martin Dvořák', cert: 'UEFA A licence', focus: 'Taktická příprava, přechodová fáze a presink' },
+          { name: 'Petr Jiránek', cert: 'UEFA Grassroots C', focus: 'Trénink brankářů a individuální dovednosti' }
+        ],
+        trainings: [
+          { title: 'Juniorský fotbalový výběr U15 (Taktika)', time: 'Pátek 16:00 - 17:30', coach: 'Martin Dvořák', price: 'Klubový', court: 'Umělá tráva (UT)' },
+          { title: 'Večerní amatérská liga v malé kopané 5+1', time: 'Úterý 20:00 - 21:30', coach: 'Petr Jiránek', price: '120 Kč / hráč', court: 'Hala A' }
+        ]
+      },
+      {
+        id: 'kruhovy-hiit',
+        name: 'Kruhový trénink & HIIT',
+        icon: 'fa-fire',
+        iconColor: '#ef4444',
+        iconBg: 'rgba(239, 68, 68, 0.15)',
+        desc: 'Vysoko-intenzivní intervalový trénink zaměřený na sílu, výbušnost a spalování tuků.',
+        form: 'Kolektivní skupinové lekce (10 až 25 osob) i Individuální vedený trénink (1 na 1)',
+        courts: ['Zrcadlový sál & Gym B', 'Venkovní workoutová zóna'],
+        trainers: [
+          { name: 'Mgr. Petr Kovář', cert: 'Kondiční trenér FTVS UK', focus: 'Tabata, kettlebelly, vzpírání a funkční síla' },
+          { name: 'Karolína Šubrtová', cert: 'CrossFit Level 1 & TRX instruktor', focus: 'Kardio spalovače a posílení středu těla' }
+        ],
+        trainings: [
+          { title: 'Intenzivní kruhový trénink (HIIT)', time: 'Zítra 17:30 - 18:45', coach: 'Petr Kovář', price: '220 Kč', court: 'Zrcadlový sál & Gym B' },
+          { title: 'Ranní HIIT Boot-camp (spalovač)', time: 'Pondělí 06:45 - 07:45', coach: 'Karolína Šubrtová', price: '200 Kč', court: 'Gym B' }
+        ]
+      },
+      {
+        id: 'joga',
+        name: 'Jóga & Pilates',
+        icon: 'fa-spa',
+        iconColor: '#34d399',
+        iconBg: 'rgba(16, 185, 129, 0.15)',
+        desc: 'Harmonické cvičení pro flexibilitu, správné držení těla a mentální zklidnění.',
+        form: 'Skupinové lekce (8 až 20 osob) i Individuální fyzioterapeutické lekce (1 na 1)',
+        courts: ['Zrcadlový sál (klidová zóna)', 'Střešní letní terasa'],
+        trainers: [
+          { name: 'Eliška Procházková', cert: 'Yoga Alliance RYT 500', focus: 'Vinyasa flow, Hatha jóga a dechové techniky pranajámy' },
+          { name: 'Mgr. Zuzana Malá', cert: 'Pilates Academy & SM systém', focus: 'Odstranění bolestí zad a posílení pánevního dna' }
+        ],
+        trainings: [
+          { title: 'Ranní regenerační jóga & mobilita', time: 'Čtvrtek 07:15 - 08:15', coach: 'Eliška Procházková', price: '190 Kč', court: 'Zrcadlový sál' },
+          { title: 'Zdravotní Pilates pro zdravá záda', time: 'Úterý 18:30 - 19:30', coach: 'Zuzana Malá', price: '210 Kč', court: 'Zrcadlový sál' }
+        ]
+      },
+      {
+        id: 'volejbal',
+        name: 'Volejbal & Beachvolejbal',
+        icon: 'fa-volleyball',
+        iconColor: '#ec4899',
+        iconBg: 'rgba(236, 72, 153, 0.15)',
+        desc: 'Šestkový halový volejbal i dynamický plážový volejbal na písku.',
+        form: 'Kolektivní: Beach (2 na 2, celkem 4 hráči), Šestky (6 na 6, celkem 12 hráčů)',
+        courts: ['Hala A - Multifunkční palubovka', 'Beachvolejbalové kurty 1 a 2 (jemný písek)'],
+        trainers: [
+          { name: 'Karel Vlček', cert: 'Extraligový trenér ČVS', focus: 'Smečování, nahrávka a herní taktika' },
+          { name: 'Lucie Horáková', cert: 'Beachvolley Pro instruktor', focus: 'Pohyb v písku, plachtící servis a příjem' }
+        ],
+        trainings: [
+          { title: 'Beachvolejbalový kemp pro pokročilé (dvojice)', time: 'Sobota 09:00 - 12:00', coach: 'Lucie Horáková', price: '450 Kč', court: 'Beach kurt 1+2' },
+          { title: 'Mixový volejbal - otevřená herní skupina', time: 'Neděle 18:00 - 20:00', coach: 'Karel Vlček', price: '150 Kč', court: 'Hala A' }
+        ]
+      },
+      {
+        id: 'badminton',
+        name: 'Badminton & Squash',
+        icon: 'fa-feather',
+        iconColor: '#10b981',
+        iconBg: 'rgba(16, 185, 129, 0.15)',
+        desc: 'Bleskurychlé raketové sporty testující postřeh, kardio a rychlost reakce.',
+        form: 'Individuální (dvouhra 1v1) i Čtyřhra (2v2)',
+        courts: ['Badminton zóna (4 kurty Taraflex)', 'Squash boxy ASB (2 klimatizované kurty)'],
+        trainers: [
+          { name: 'Jan Koukal st.', cert: 'Trenér squashové asociace', focus: 'Taktika drop-shotů, boasty a kondice' },
+          { name: 'Ing. Simona Černá', cert: 'Český badmintonový svaz', focus: 'Úderová technika, kraťasy a pohyb po kurtu' }
+        ],
+        trainings: [
+          { title: 'Zdokonalovací kurz badmintonu pro dospělé', time: 'Středa 19:00 - 20:30', coach: 'Simona Černá', price: '260 Kč', court: 'Badminton kurt 3+4' },
+          { title: 'Squash sparring a technika odrazů', time: 'Čtvrtek 17:00 - 18:00', coach: 'Jan Koukal st.', price: '390 Kč', court: 'Squash box 1' }
+        ]
+      },
+      {
+        id: 'basketbal',
+        name: 'Basketbal (FIBA)',
+        icon: 'fa-basketball',
+        iconColor: '#f97316',
+        iconBg: 'rgba(249, 115, 22, 0.15)',
+        desc: 'Dynamická hra s odpruženými koši a profi palubovkou.',
+        form: 'Kolektivní sport (Streetball 3v3 až klasický basketbal 5v5)',
+        courts: ['Hala A - Multifunkční palubovka (2 hlavní koše + 4 boční)'],
+        trainers: [
+          { name: 'Dušan Bohunický', cert: 'Licence ČBF', focus: 'Střelba z výskoku, driblink a herní kombinace' }
+        ],
+        trainings: [
+          { title: 'Basketbalový scrimmage a střelecký dril', time: 'Pondělí 19:00 - 20:30', coach: 'Dušan Bohunický', price: '160 Kč', court: 'Hala A' }
+        ]
+      },
+      {
+        id: 'bojova-umeni',
+        name: 'Bojová umění & Sebeobrana',
+        icon: 'fa-hand-fist',
+        iconColor: '#f43f5e',
+        iconBg: 'rgba(244, 63, 94, 0.15)',
+        desc: 'Krav Maga, Judo a funkční sebeobrana na certifikovaném tatami.',
+        form: 'Individuální výuka (1 na 1) i Skupinové kurzy (6 až 18 osob)',
+        courts: ['Zrcadlový sál & Tatami zóna (50 m2)'],
+        trainers: [
+          { name: 'Ing. Roman Křížek', cert: 'Krav Maga Expert 2 & ČATK', focus: 'Reálná sebeobrana, krizové situace a boj na zemi' }
+        ],
+        trainings: [
+          { title: 'Kurz reálné sebeobrany pro veřejnost', time: 'Úterý 19:45 - 21:00', coach: 'Roman Křížek', price: '250 Kč', court: 'Zrcadlový sál' }
+        ]
+      }
+    ];
+
+    // Render the interactive sports catalog cards
+    function renderSportsCatalog() {
+      const container = document.getElementById('sportsInteractiveCatalog');
+      if(!container) return;
+      container.innerHTML = '';
+
+      sportsCatalogDetailed.forEach(s => {
+        const card = document.createElement('div');
+        card.className = 'sport-interactive-card';
+        card.onclick = () => openSportDetailModal(s.id);
+        card.innerHTML = `
+          <div class="sport-card-top">
+            <div class="sport-card-icon" style="background: ${s.iconBg}; color: ${s.iconColor};">
+              <i class="fa-solid ${s.icon}"></i>
+            </div>
+            <div>
+              <h3 style="font-size: 1.05rem; font-weight: 700;">${s.name}</h3>
+              <div style="font-size: 0.75rem; color: #38bdf8; font-weight: 600;">Rozkliknout detail sportu →</div>
+            </div>
+          </div>
+          <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.75rem; line-height: 1.4;">${s.desc}</p>
+          <div style="margin-top: auto; padding-top: 0.65rem; border-top: 1px solid var(--border-color); font-size: 0.75rem; color: var(--text-dim); display: flex; justify-content: space-between;">
+            <span><i class="fa-solid fa-user-tie"></i> ${s.trainers.length} trenéři</span>
+            <span><i class="fa-solid fa-calendar-days"></i> ${s.trainings.length} nejbližší tréninky</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Open Sport Detail Drill-Down Modal
+    function openSportDetailModal(sportId) {
+      const sport = sportsCatalogDetailed.find(s => s.id === sportId);
+      if(!sport) return;
+
+      document.getElementById('sportModalHeaderTitle').innerHTML = `
+        <div style="width: 32px; height: 32px; border-radius: 8px; background: ${sport.iconBg}; color: ${sport.iconColor}; display: flex; align-items: center; justify-content: center; font-size: 1rem;">
+          <i class="fa-solid ${sport.icon}"></i>
+        </div>
+        <span>${sport.name}</span>
+      `;
+      document.getElementById('sportModalDesc').innerText = sport.desc;
+      document.getElementById('sportModalFormType').innerHTML = `<i class="fa-solid fa-users-line"></i> ${sport.form}`;
+
+      // Courts list
+      const courtsContainer = document.getElementById('sportModalCourtsList');
+      courtsContainer.innerHTML = '';
+      sport.courts.forEach(courtName => {
+        const item = document.createElement('div');
+        item.style.cssText = 'background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem;';
+        item.innerHTML = `
+          <span><i class="fa-solid fa-location-dot" style="color: #60a5fa; margin-right: 6px;"></i> ${courtName}</span>
+          <button class="btn btn-outline btn-sm" onclick="closeModal('sportDetailModal'); openCourtModal('${courtName.replace(/'/g, "\\'")}')">
+            Zobrazit hřiště
+          </button>
+        `;
+        courtsContainer.appendChild(item);
+      });
+
+      // Trainers list
+      const trainersContainer = document.getElementById('sportModalTrainersList');
+      trainersContainer.innerHTML = '';
+      sport.trainers.forEach(t => {
+        const item = document.createElement('div');
+        item.style.cssText = 'background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; font-size: 0.85rem;';
+        item.innerHTML = `
+          <div style="font-weight: 700; color: #c084fc;">${t.name} <span style="font-size: 0.72rem; color: var(--text-dim); font-weight: normal;">(${t.cert})</span></div>
+          <div style="font-size: 0.78rem; color: var(--text-muted);">${t.focus}</div>
+        `;
+        trainersContainer.appendChild(item);
+      });
+
+      // Upcoming trainings list
+      const trainingsContainer = document.getElementById('sportModalTrainingsList');
+      trainingsContainer.innerHTML = '';
+      sport.trainings.forEach(tr => {
+        const item = document.createElement('div');
+        item.style.cssText = 'background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.25); padding: 10px 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 0.85rem;';
+        item.innerHTML = `
+          <div>
+            <div style="font-weight: 700; color: #fff;">${tr.title}</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">
+              <i class="fa-regular fa-clock"></i> ${tr.time} • Trenér: ${tr.coach} • Místo: ${tr.court}
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-weight: 700; color: #10b981;">${tr.price}</span>
+            <button class="btn btn-primary btn-sm" onclick="closeModal('sportDetailModal'); openJoinTrainingModal('${tr.title.replace(/'/g, "\\'")}', '${tr.coach}', '${tr.price}', 10, 20)">
+              Zapsat se
+            </button>
+          </div>
+        `;
+        trainingsContainer.appendChild(item);
+      });
+
+      document.getElementById('sportDetailModal').classList.add('open');
+    }
+
+    // Past Training Archive Data
+    const pastTrainingLogs = {
+      'hiit-yesterday': {
+        title: 'HIIT & Tabata Spalovač (Včera)',
+        when: 'Včera (Úterý) 17:30 - 18:45 | Zrcadlový sál & Gym B',
+        coach: 'Mgr. Petr Kovář',
+        count: 21,
+        participants: [
+          'Jan Novák (Zákazník)', 'Tomáš Dvořák', 'Lukáš Mareš', 'Karolína Šedá', 'Marek Svoboda',
+          'Petra Černá', 'Michal Urban', 'Jiří Veselý', 'David Horák', 'Barbora Němcová',
+          'Vojtěch Král', 'Simona Pospíšilová', 'Ondřej Janda', 'Filip Marek', 'Monika Vlčková',
+          'Radek Kučera', 'Zuzana Malá', 'Jakub Beneš', 'Eva Holubová', 'Adam Sedláček', 'Tereza Křížová'
+        ],
+        log: 'Zaměření tréninku: Výbušná síla a intervalové kardio 40s práce / 20s odpočinek. 5 stanovišť: 1) Kettlebell swingy (16/24 kg), 2) Rychlostní švihadlo, 3) Angličáky s výskokem na bednu 60 cm, 4) Slam ball hody o zem, 5) TRX přítahy. Všech 21 účastníků dokončilo 4 kompletní kola bez zranění. Šatna 3 využita v plné kapacitě.'
+      },
+      'u15-monday': {
+        title: 'Fotbal U15 - Nácvik vysokého presinku',
+        when: 'Pondělí 16:00 - 17:30 | Hřiště s umělou trávou (UT 3G)',
+        coach: 'Martin Dvořák (Klubový trenér)',
+        count: 19,
+        participants: [
+          'Matěj Prokop', 'Patrik Růžička', 'Oliver Tichý', 'Samuel Bárta', 'Kryštof Hruška',
+          'Daniel Kolář', 'Štěpán Kříž', 'Adam Mach', 'Dominik Šimek', 'Filip Vávra',
+          'Robin Kováč', 'Václav Čermák', 'Jan Trojan', 'Tobiáš Zeman', 'Erik Polák',
+          'Kristián Soukup', 'Viktor Richter', 'Richard Blažek', 'Matyáš Dušek'
+        ],
+        log: 'Zápis jednotky: 15 min dynamické rozcvičení a koordinační žebřík. Hlavní část: modelová hra na zkráceném prostoru 45x35 m zaměřená na okamžitý presink po ztrátě míče (pravidlo 5 sekund). Závěrečný nácvik rohových kopů a standardek z levé strany. Hřiště UT ve výborném stavu, po tréninku uklizeny pomůcky do skladu B.'
+      },
+      'joga-sunday': {
+        title: 'Power Jóga & Dechová cvičení',
+        when: 'Neděle 09:00 - 10:15 | Zrcadlový sál',
+        coach: 'Eliška Procházková',
+        count: 14,
+        participants: [
+          'Jan Novák', 'Alena Králová', 'Kateřina Bílá', 'Martina Pokorná', 'Veronika Štěpánková',
+          'Jana Moravcová', 'Pavla Doležalová', 'Radka Vondrová', 'Lucie Čechová', 'Zdeněk Kubeš',
+          'Lenka Trojanová', 'Helena Strnadová', 'Renata Brožová', 'Klára Valentová'
+        ],
+        log: 'Lekce byla zaměřena na protažení a posílení hlubokého stabilizačního systému páteře. Série pozdravů slunci Surya Namaskar B, bojovníci I-III, pozice holuba na otevření kyčlí. Závěrečných 15 minut pranajáma (střídavý dech Nadi Shodhana) a šavásana. Využita Šatna č. 2.'
+      }
+    };
+
+    // Role Switcher Handler
+    function switchRole(role) {
+      currentRole = role;
+
+      document.querySelectorAll('.role-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.role === role);
+      });
+
+      const roleIndicator = document.getElementById('roleIndicator');
+      const roleBanner = document.getElementById('roleBanner');
+      const bannerTitle = document.getElementById('bannerTitle');
+      const bannerText = document.getElementById('bannerText');
+      const bannerActionSlot = document.getElementById('bannerActionSlot');
+      const avatarLetter = document.getElementById('avatarLetter');
+      const profileName = document.getElementById('profileName');
+      const profileRole = document.getElementById('profileRole');
+      const adminSpecialTab = document.getElementById('adminSpecialTab');
+      const adminStaffTab = document.getElementById('adminStaffTab');
+      const adminHistoryTab = document.getElementById('adminHistoryTab');
+      const userHistoryTab = document.getElementById('userHistoryTab');
+      const trainerActionHeader = document.getElementById('trainerActionHeader');
+      const adminCourtHint = document.getElementById('adminCourtHint');
+      const adminLockerHint = document.getElementById('adminLockerHint');
+      const adminApprovalBadge = document.getElementById('adminApprovalBadge');
+
+      const adminButtons = document.querySelectorAll('.admin-only-btn');
+      roleBanner.className = 'role-banner';
+
+      if (role === 'user') {
+        roleIndicator.innerHTML = 'Aktivní pohled: <strong style="color: #60a5fa;">Běžný návštěvník / Uživatel</strong>';
+        roleBanner.classList.add('banner-user');
+        bannerTitle.innerText = 'Pohled: Běžný uživatel';
+        bannerText.innerText = 'Můžete procházet hřiště, kliknout na jakýkoliv sport v katalogu, přihlásit se na lekce, platit online a v záložce "Moje zápisy & Historie" vidíte své aktuální i proběhlé tréninky.';
+        avatarLetter.innerText = 'U';
+        avatarLetter.style.background = 'linear-gradient(135deg, #3b82f6, #1d4ed8)';
+        profileName.innerText = 'Jan Novák';
+        profileRole.innerText = 'Návštěvník / Zákazník';
+        
+        adminSpecialTab.style.display = 'none';
+        adminStaffTab.style.display = 'none';
+        adminHistoryTab.style.display = 'none';
+        userHistoryTab.style.display = 'inline-flex';
+        adminCourtHint.style.display = 'none';
+        adminLockerHint.style.display = 'none';
+        adminApprovalBadge.style.display = 'none';
+
+        adminButtons.forEach(b => b.style.display = 'none');
+        trainerActionHeader.innerHTML = '';
+        bannerActionSlot.innerHTML = `
+          <button class="btn btn-outline" style="font-size: 0.75rem;" onclick="openPaymentModal('Rychlá rezervace')">
+            <i class="fa-solid fa-credit-card"></i> Způsoby online platby
+          </button>
+        `;
+
+        document.getElementById('pendingActionButtons').innerHTML = `
+          <button class="btn btn-outline" disabled style="opacity: 0.5;">
+            <i class="fa-solid fa-hourglass-half"></i> Čeká na schválení
+          </button>
+        `;
+      } 
+      else if (role === 'trainer') {
+        roleIndicator.innerHTML = 'Aktivní pohled: <strong style="color: #c084fc;">Trenér (Vedené & jednorázové tréninky)</strong>';
+        roleBanner.classList.add('banner-trainer');
+        bannerTitle.innerText = 'Pohled: Trenér sportoviště';
+        bannerText.innerText = 'Máte možnost vypisovat vedené i jednorázové tréninky (1 až 30 lidí), zadávat jména účastníků a posílat návrhy ke schválení správci areálu.';
+        avatarLetter.innerText = 'T';
+        avatarLetter.style.background = 'linear-gradient(135deg, #8b5cf6, #6d28d9)';
+        profileName.innerText = 'Mgr. Petr Kovář';
+        profileRole.innerText = 'Certifikovaný trenér';
+        
+        adminSpecialTab.style.display = 'none';
+        adminStaffTab.style.display = 'none';
+        adminHistoryTab.style.display = 'none';
+        userHistoryTab.style.display = 'none';
+        adminCourtHint.style.display = 'none';
+        adminLockerHint.style.display = 'none';
+        adminApprovalBadge.style.display = 'none';
+
+        adminButtons.forEach(b => b.style.display = 'none');
+
+        trainerActionHeader.innerHTML = `
+          <button class="btn btn-purple" onclick="openTrainerModal()">
+            <i class="fa-solid fa-plus"></i> Vypsat nový trénink (1-30 lidí)
+          </button>
+        `;
+
+        bannerActionSlot.innerHTML = `
+          <button class="btn btn-purple" style="font-size: 0.75rem;" onclick="openTrainerModal()">
+            <i class="fa-solid fa-plus"></i> Vypsat trénink s účastníky
+          </button>
+        `;
+
+        document.getElementById('pendingActionButtons').innerHTML = `
+          <span style="font-size: 0.8rem; color: #fbbf24;"><i class="fa-solid fa-clock"></i> Odesláno správci ke schválení</span>
+        `;
+      } 
+      else if (role === 'admin') {
+        roleIndicator.innerHTML = 'Aktivní pohled: <strong style="color: #34d399;">Správce areálu (Administrátor v2.0)</strong>';
+        roleBanner.classList.add('banner-admin');
+        bannerTitle.innerText = 'Pohled: Administrátor areálu (Plná správa v2.0)';
+        bannerText.innerText = 'Můžete měnit kapacitu šaten i tréninků, schvalovat návrhy trenérů, zadávat úkoly zaměstnancům (např. úklid v daný čas) a nahlížet do archívu tréninků.';
+        avatarLetter.innerText = 'A';
+        avatarLetter.style.background = 'linear-gradient(135deg, #10b981, #047857)';
+        profileName.innerText = 'Ing. Michal Kříž';
+        profileRole.innerText = 'Hlavní správce sportovišť';
+        
+        adminSpecialTab.style.display = 'inline-flex';
+        adminStaffTab.style.display = 'inline-flex';
+        adminHistoryTab.style.display = 'inline-flex';
+        userHistoryTab.style.display = 'none';
+        adminCourtHint.style.display = 'inline';
+        adminLockerHint.style.display = 'inline';
+        adminApprovalBadge.style.display = 'inline';
+
+        adminButtons.forEach(b => b.style.display = 'inline-flex');
+
+        trainerActionHeader.innerHTML = `
+          <button class="btn btn-emerald" onclick="openTrainerModal()">
+            <i class="fa-solid fa-plus"></i> Přidat trénink jako správce
+          </button>
+        `;
+
+        bannerActionSlot.innerHTML = `
+          <button class="btn btn-emerald" style="font-size: 0.75rem;" onclick="showAppTab('zamestnanci', document.getElementById('adminStaffTab'))">
+            <i class="fa-solid fa-tasks"></i> Zadat úkoly zaměstnancům
+          </button>
+        `;
+
+        document.getElementById('pendingActionButtons').innerHTML = `
+          <button class="btn btn-emerald btn-sm" onclick="approvePendingTraining()">
+            <i class="fa-solid fa-check"></i> Schválit
+          </button>
+          <button class="btn btn-rose btn-sm" onclick="rejectPendingTraining()">
+            <i class="fa-solid fa-xmark"></i> Zamítnout
+          </button>
+        `;
+      }
+
+      showToast(`Režim zobrazení: ${role === 'user' ? 'Uživatel' : role === 'trainer' ? 'Trenér' : 'Správce (Admin)'}`);
+    }
+
+    // Device mockup switcher
+    function setDevice(device, btn) {
+      currentDevice = device;
+      document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const frame = document.getElementById('mockupFrame');
+      frame.className = `mockup-frame device-${device}`;
+      showToast(`Náhled přizpůsoben pro: ${device === 'desktop' ? 'PC/Notebook' : device === 'tablet' ? 'Tablet' : 'Mobilní telefon'}`);
+    }
+
+    // App Navigation Tabs
+    function showAppTab(tabId, btn) {
+      document.querySelectorAll('.app-nav-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+      if(btn) btn.classList.add('active');
+
+      document.querySelectorAll('.view-content').forEach(view => {
+        view.classList.remove('active-view');
+      });
+
+      const target = document.getElementById('tab-' + tabId);
+      if(target) {
+        target.classList.add('active-view');
+      }
+    }
+
+    // Court Detail Modal
+    let selectedCourtData = null;
+    function openCourtModal(courtName) {
+      const data = courtDetails[courtName] || {
+        img: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=900&auto=format&fit=crop&q=80',
+        price: '400 Kč / hod',
+        locker: 'Standardní šatny areálu.',
+        sports: [{ name: 'Univerzální sporty', desc: 'Všeobecné sportovní vyžití.', icon: 'fa-futbol' }]
+      };
+
+      selectedCourtData = { name: courtName, ...data };
+
+      document.getElementById('modalCourtTitle').innerText = courtName;
+      document.getElementById('modalCourtImg').src = data.img;
+      document.getElementById('modalPrice').innerText = data.price;
+      document.getElementById('modalLockerInfo').innerText = data.locker;
+
+      const sportsContainer = document.getElementById('modalSportsList');
+      sportsContainer.innerHTML = '';
+
+      data.sports.forEach(s => {
+        const item = document.createElement('div');
+        item.style.cssText = 'background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); padding: 8px 12px; border-radius: 8px; display: flex; align-items: flex-start; gap: 10px;';
+        item.innerHTML = `
+          <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(59,130,246,0.15); color: #60a5fa; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <i class="fa-solid ${s.icon}"></i>
+          </div>
+          <div>
+            <div style="font-weight: 700; font-size: 0.9rem; color: #fff;">${s.name}</div>
+            <div style="font-size: 0.78rem; color: var(--text-muted);">${s.desc}</div>
+          </div>
+        `;
+        sportsContainer.appendChild(item);
+      });
+
+      document.getElementById('courtModal').classList.add('open');
+    }
+
+    function openBookingStep() {
+      closeModal('courtModal');
+      openPaymentModal(selectedCourtData ? selectedCourtData.name : 'Rezervace hřiště');
+    }
+
+    // Trainer modal
+    function openTrainerModal() {
+      document.getElementById('trainerCreateModal').classList.add('open');
+    }
+
+    function handleCreateTraining(e) {
+      e.preventDefault();
+      const name = document.getElementById('trName').value;
+      const type = document.getElementById('trType').value;
+      const diff = document.getElementById('trDiff').value;
+      const court = document.getElementById('trCourt').value;
+      const capacity = document.getElementById('trCapacity').value;
+      const participants = document.getElementById('trParticipants').value;
+      const price = document.getElementById('trPrice').value;
+
+      closeModal('trainerCreateModal');
+
+      const container = document.getElementById('trainingListContainer');
+      const item = document.createElement('div');
+      item.className = 'training-item';
+      item.style.borderColor = '#f59e0b';
+      item.style.background = 'rgba(245, 158, 11, 0.05)';
+
+      const diffClass = diff === 'Začátečník' ? 'diff-easy' : diff === 'Střední' ? 'diff-medium' : 'diff-hard';
+      const participantsArray = participants.split(',').filter(p => p.trim().length > 0);
+      const enrolledCount = participantsArray.length;
+
+      item.innerHTML = `
+        <div class="training-info">
+          <div class="training-icon-box" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">
+            <i class="fa-solid fa-clock"></i>
+          </div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; flex-wrap: wrap;">
+              <h4 style="font-size: 1.05rem;">${name}</h4>
+              <span class="badge-diff ${diffClass}">Náročnost: ${diff}</span>
+              <span class="card-tag tag-pending" style="position: static; font-size: 0.7rem; padding: 2px 8px;">Čeká na schválení správcem</span>
+            </div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); display: flex; gap: 1rem; flex-wrap: wrap;">
+              <span><i class="fa-regular fa-clock"></i> Nově vypsáno</span>
+              <span><i class="fa-solid fa-location-dot"></i> ${court}</span>
+              <span><i class="fa-solid fa-user-tie"></i> Trenér: ${profileName.innerText}</span>
+            </div>
+            <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.4rem;">
+              Kapacita: <strong>${enrolledCount} / ${capacity} účastníků</strong>. 
+              ${participantsArray.length > 0 ? `Zapsaní: <em>${participantsArray.join(', ')}</em>` : 'Zatím žádná zapsaná jména.'}
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <span style="font-size: 0.8rem; color: #fbbf24;"><i class="fa-solid fa-hourglass-half"></i> Čeká na schválení správce</span>
+        </div>
+      `;
+
+      container.prepend(item);
+      showAppTab('treninky', document.querySelectorAll('.app-nav-tabs .tab-btn')[1]);
+      showToast(`Návrh tréninku "${name}" pro ${capacity} lidí byl odeslán správci ke schválení!`);
+    }
+
+    // Join training modal
+    let activeJoiningTitle = '';
+    let activeJoiningPrice = '';
+    function openJoinTrainingModal(title, trainer, price, count, max) {
+      activeJoiningTitle = title;
+      activeJoiningPrice = price;
+      document.getElementById('joinTrainingTitle').innerText = title;
+      document.getElementById('joinTrainingTrainer').innerText = `Trenér: ${trainer} • Obsazenost: ${count} z ${max} míst`;
+      document.getElementById('joinPrice').innerText = price;
+      document.getElementById('joinTrainingModal').classList.add('open');
+    }
+
+    function handleJoinTrainingSubmit(e) {
+      e.preventDefault();
+      const userName = document.getElementById('joinUserName').value;
+      closeModal('joinTrainingModal');
+
+      const upcomingContainer = document.getElementById('userUpcomingContainer');
+      const newCard = document.createElement('div');
+      newCard.className = 'training-item';
+      newCard.style.borderLeft = '4px solid #10b981';
+      newCard.innerHTML = `
+        <div class="training-info">
+          <div class="training-icon-box" style="background: rgba(16, 185, 129, 0.15); color: #34d399;">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+              <h4 style="font-size: 1.05rem;">${activeJoiningTitle}</h4>
+              <span class="payment-badge"><i class="fa-solid fa-check"></i> Uhrazeno online (${activeJoiningPrice})</span>
+            </div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); display: flex; gap: 1rem; flex-wrap: wrap;">
+              <span><i class="fa-regular fa-clock"></i> Nejbližší termín</span>
+              <span><i class="fa-solid fa-door-open"></i> Šatna přidělena (Kód: 9283)</span>
+            </div>
+            <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.4rem;">
+              Účastník: <strong>${userName}</strong>
+            </div>
+          </div>
+        </div>
+        <div>
+          <button class="btn btn-outline btn-sm" onclick="showToast('Vstupní QR kód aktivní')">
+            <i class="fa-solid fa-qrcode"></i> QR kód
+          </button>
+        </div>
+      `;
+      upcomingContainer.prepend(newCard);
+
+      if(activeJoiningTitle.includes('HIIT')) {
+        const countSpan = document.getElementById('hiitCount');
+        if(countSpan) countSpan.innerText = parseInt(countSpan.innerText) + 1;
+      }
+
+      showToast(`Platba proběhla úspěšně! Byli jste zapsáni a trénink byl přidán do vašich zápisů.`);
+    }
+
+    // Payment modal
+    function openPaymentModal(item) {
+      document.getElementById('paymentModal').classList.add('open');
+    }
+
+    // Approval of pending training
+    function approvePendingTraining() {
+      const pendingCard = document.getElementById('pendingTrainingItem');
+      pendingCard.style.borderColor = 'rgba(255,255,255,0.08)';
+      pendingCard.style.background = 'var(--bg-card)';
+      
+      document.getElementById('pTrainingTitle').innerText = 'Kondiční kruhový boot-camp';
+      
+      const actions = document.getElementById('pendingActionButtons');
+      actions.innerHTML = `
+        <span class="payment-badge"><i class="fa-solid fa-check"></i> Schváleno správcem</span>
+        <button class="btn btn-primary" onclick="openJoinTrainingModal('Kondiční kruhový boot-camp', 'Petr Kovář', '250 Kč', 0, 20)">
+          <i class="fa-solid fa-user-plus"></i> Přihlásit se
+        </button>
+      `;
+
+      const approvalSec = document.getElementById('adminApprovalSection');
+      if(approvalSec) approvalSec.style.display = 'none';
+
+      const stat = document.getElementById('adminPendingStat');
+      if(stat) stat.innerText = '0 tréninků';
+
+      const badge = document.getElementById('adminApprovalBadge');
+      if(badge) badge.style.display = 'none';
+
+      showToast('Trénink i hřiště byly správcem úspěšně SCHVÁLENY a uvolněny do veřejné nabídky!');
+    }
+
+    function rejectPendingTraining() {
+      const pendingCard = document.getElementById('pendingTrainingItem');
+      if(pendingCard) pendingCard.remove();
+      const approvalSec = document.getElementById('adminApprovalSection');
+      if(approvalSec) approvalSec.style.display = 'none';
+      const stat = document.getElementById('adminPendingStat');
+      if(stat) stat.innerText = '0 tréninků';
+      showToast('Trénink byl zamítnut správcem.');
+    }
+
+    // Edit Locker Capacity Modal
+    let targetLockerCapId = null;
+    let targetLockerBarId = null;
+    let targetLockerFreeId = null;
+    let targetLockerOcc = 0;
+
+    function openLockerCapacityModal(name, capId, barId, freeId, occ, total) {
+      targetLockerCapId = capId;
+      targetLockerBarId = barId;
+      targetLockerFreeId = freeId;
+      targetLockerOcc = occ;
+
+      document.getElementById('editLockerName').value = name;
+      document.getElementById('editLockerOccupied').value = occ;
+      document.getElementById('editLockerTotal').value = total;
+
+      document.getElementById('editLockerModal').classList.add('open');
+    }
+
+    function handleLockerCapacitySave(e) {
+      e.preventDefault();
+      const newTotal = parseInt(document.getElementById('editLockerTotal').value);
+      if(targetLockerCapId) {
+        document.getElementById(targetLockerCapId).innerText = newTotal;
+      }
+      if(targetLockerFreeId) {
+        document.getElementById(targetLockerFreeId).innerText = Math.max(0, newTotal - targetLockerOcc);
+      }
+      if(targetLockerBarId) {
+        const pct = Math.min(100, Math.round((targetLockerOcc / newTotal) * 100));
+        document.getElementById(targetLockerBarId).style.width = pct + '%';
+      }
+
+      closeModal('editLockerModal');
+      showToast(`Kapacita šatny byla správcem upravena na ${newTotal} skříněk!`);
+    }
+
+    // Edit Training Capacity Modal
+    let targetTrCapId = null;
+    function openEditCapacityModal(name, capId, currentVal) {
+      targetTrCapId = capId;
+      document.getElementById('editTrCapName').value = name;
+      document.getElementById('editTrCapValue').value = currentVal;
+      document.getElementById('editTrainingCapModal').classList.add('open');
+    }
+
+    function handleTrainingCapSave(e) {
+      e.preventDefault();
+      const newVal = document.getElementById('editTrCapValue').value;
+      if(targetTrCapId) {
+        document.getElementById(targetTrCapId).innerText = newVal;
+      }
+      closeModal('editTrainingCapModal');
+      showToast(`Limit kapacity tréninku byl změněn na ${newVal} účastníků!`);
+    }
+
+    // Staff Task Assignment
+    function openAddTaskModal(preselectedEmployee) {
+      if(preselectedEmployee && preselectedEmployee.includes('Marie')) {
+        document.getElementById('taskStaffSelect').value = 'marie';
+      } else if(preselectedEmployee && preselectedEmployee.includes('Josef')) {
+        document.getElementById('taskStaffSelect').value = 'josef';
+      } else if(preselectedEmployee && preselectedEmployee.includes('Lucie')) {
+        document.getElementById('taskStaffSelect').value = 'lucie';
+      }
+      document.getElementById('addTaskModal').classList.add('open');
+    }
+
+    function handleAddTaskSubmit(e) {
+      e.preventDefault();
+      const emp = document.getElementById('taskStaffSelect').value;
+      const time = document.getElementById('taskTime').value;
+      const loc = document.getElementById('taskLocation').value;
+      const title = document.getElementById('taskTitle').value;
+      const details = document.getElementById('taskDetails').value;
+
+      closeModal('addTaskModal');
+
+      const targetList = document.getElementById('tasks-' + emp);
+      if(targetList) {
+        const newEntry = document.createElement('div');
+        newEntry.className = 'task-entry';
+        newEntry.style.border = '1px solid #10b981';
+        newEntry.innerHTML = `
+          <div>
+            <div style="font-weight: 600;"><i class="fa-solid fa-clock" style="color: #60a5fa;"></i> ${time} - ${title} (${loc})</div>
+            <div style="font-size: 0.75rem; color: var(--text-dim);">${details}</div>
+          </div>
+          <span class="task-status-pill status-pending">Nové</span>
+        `;
+        targetList.prepend(newEntry);
+      }
+
+      showToast(`Nový úkol pro zaměstnance byl uložen a notifikován do systému!`);
+    }
+
+    // Past Training History Modal
+    function openTrainingDetailModal(key) {
+      const data = pastTrainingLogs[key];
+      if(!data) return;
+
+      document.getElementById('histModalTitle').innerHTML = `<i class="fa-solid fa-clipboard-list" style="color: #3b82f6;"></i> ${data.title}`;
+      document.getElementById('histModalWhen').innerText = data.when;
+      document.getElementById('histModalCoach').innerText = data.coach;
+      document.getElementById('histModalCount').innerText = data.count;
+      document.getElementById('histModalLog').innerHTML = `<em>"${data.log}"</em>`;
+
+      const listContainer = document.getElementById('histModalParticipantsList');
+      listContainer.innerHTML = '';
+      data.participants.forEach((name) => {
+        const span = document.createElement('span');
+        span.style.cssText = 'display: inline-block; background: rgba(255,255,255,0.06); padding: 2px 8px; border-radius: 4px; margin: 2px 4px; font-size: 0.8rem;';
+        span.innerHTML = `<i class="fa-solid fa-user-check" style="color: #10b981; font-size: 0.7rem;"></i> ${name}`;
+        listContainer.appendChild(span);
+      });
+
+      document.getElementById('trainingDetailModal').classList.add('open');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('open');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toastNotification');
+      document.getElementById('toastMessage').innerText = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3500);
+    }
+
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if(e.target === modal) {
+          modal.classList.remove('open');
+        }
+      });
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
+      }
+    });
+
+    // Initialize interactive sports catalog on load
+    window.addEventListener('DOMContentLoaded', () => {
+      renderSportsCatalog();
+    });
+  </script>
+</body>
+</html>
